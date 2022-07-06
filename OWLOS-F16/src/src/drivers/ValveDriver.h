@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------
+﻿/* ----------------------------------------------------------------------------
 Ready IoT Solution - OWLOS
 Copyright 2019, 2020 by:
 - Konstantin Brul (konstabrul@gmail.com)
@@ -38,19 +38,68 @@ OWLOS распространяется в надежде, что она буде
 Вы должны были получить копию Стандартной общественной лицензии GNU вместе с
 этой программой. Если это не так, см. <https://www.gnu.org/licenses/>.)
 --------------------------------------------------------------------------------------*/
-#ifndef noPlatformIO
 
-#include "src/Kernel.h"
+#include "BaseDriver.h"
+#ifdef USE_VALVE_DRIVER
+#ifndef VALVEDRIVER_H
+#define VALVEDRIVER_H
 
-void setup()
+#define CLOSE_PIN_INDEX 0
+#define OPEN_PIN_INDEX 1
+#define POSITION_PIN_INDEX 2
+#define _VCC5_INDEX 3
+#define _GND_INDEX 4
+
+#define MOTOR_STOP_COMMAND HIGH
+#define MOTOR_START_COMMAND LOW
+
+class ValveDriver : public BaseDriver
 {
-	//OWLOS Kernel Setup
-	kernelSetup();
-}
+public:
+	static int getPinsCount()
+	{
+		return 5;
+	}
 
-void loop()
-{
-	//OWLOS Kernel Loop
-	kernelLoop();
-}
+	static uint16_t getPinType(int pinIndex)
+	{
+		switch (pinIndex)
+		{
+		case CLOSE_PIN_INDEX:
+			return DIGITAL_O_MASK;
+		case OPEN_PIN_INDEX:
+			return DIGITAL_O_MASK;
+		case POSITION_PIN_INDEX:
+			return ANALOG_I_MASK;
+		case _VCC5_INDEX:
+			return VCC5_MASK || VCC33_MASK;
+		case _GND_INDEX:
+			return GND_MASK;
+		default:
+			return NO_MASK;
+		}
+	}
+
+	bool init();
+	bool begin(String _topic);
+	bool query();
+	String getAllProperties();
+	bool publish();
+	String onMessage(String route, String _payload, int8_t transportMask);
+
+	int getPosition();
+	bool setPosition(int _position);
+	int getMinimumphysicalposition();
+	int getMaximumphysicalposition();
+	int getphysicalposition();
+
+private:
+	void toMinMaxPosition(int _pin);
+	int position = 0;					// 0 - close, 100 - open
+	int minimumphysicalposition = 0;	// valve is close
+	int maximumphysicalposition = 1023; // valve is open
+	int physicalposition = 0;			// valve first is close
+	int newphysicalposition = 0;
+};
+#endif
 #endif

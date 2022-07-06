@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------
+﻿/* ----------------------------------------------------------------------------
 Ready IoT Solution - OWLOS
 Copyright 2019, 2020 by:
 - Konstantin Brul (konstabrul@gmail.com)
@@ -38,19 +38,22 @@ OWLOS распространяется в надежде, что она буде
 Вы должны были получить копию Стандартной общественной лицензии GNU вместе с
 этой программой. Если это не так, см. <https://www.gnu.org/licenses/>.)
 --------------------------------------------------------------------------------------*/
-#ifndef noPlatformIO
+#ifndef SCRIPTSERVICE_H
+#define SCRIPTSERVICE_H
 
-#include "src/Kernel.h"
+#include "../config.h"
+#ifdef USE_SCRIPT
 
-void setup()
-{
-	//OWLOS Kernel Setup
-	kernelSetup();
-}
-
-void loop()
-{
-	//OWLOS Kernel Loop
-	kernelLoop();
-}
+String scriptsGetAll();
+bool scriptsDelete(String name);
+bool scriptsSave();
+bool scriptsRun();
+bool scriptsStartDebug(String name);
+String scriptsDebugNext(String name);
+String scriptsCreate(String name, String byteCode);
+String scriptsCompile(int index);
+bool scriptsLoad();
+bool nearlyEqyal(float a, float b);
+void testCompile();
+#endif
 #endif

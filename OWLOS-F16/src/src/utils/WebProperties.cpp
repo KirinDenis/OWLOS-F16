@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------
+/* ----------------------------------------------------------------------------
 Ready IoT Solution - OWLOS
 Copyright 2019, 2020 by:
 - Konstantin Brul (konstabrul@gmail.com)
@@ -38,19 +38,86 @@ OWLOS распространяется в надежде, что она буде
 Вы должны были получить копию Стандартной общественной лицензии GNU вместе с
 этой программой. Если это не так, см. <https://www.gnu.org/licenses/>.)
 --------------------------------------------------------------------------------------*/
-#ifndef noPlatformIO
 
-#include "src/Kernel.h"
+#include "WebProperties.h"
+#ifdef USE_ESP_DRIVER
 
-void setup()
+#include "../drivers/ESPDriver.h"
+#include "../services/FileService.h"
+
+#define id "webproperties"
+
+String webGetWebConfig()
 {
-	//OWLOS Kernel Setup
-	kernelSetup();
+	String result = "";
+	if (filesExists("web.config"))
+	{
+		result = filesReadString("web.config");
+	}
+
+#ifdef DETAILED_DEBUG 
+	#ifdef DEBUG
+debugOut(id, "config=" + result);
+#endif
+#endif
+	return result;
 }
 
-void loop()
+bool webSetHead(String _webConfig)
 {
-	//OWLOS Kernel Loop
-	kernelLoop();
+#ifdef DETAILED_DEBUG 
+	#ifdef DEBUG
+debugOut(id, "|<- inside change config=" + _webConfig);
+#endif
+#endif
+	filesWriteString("web.temp", _webConfig);
+	return true;
 }
+
+bool webSetBody(String _webConfig)
+{
+#ifdef DETAILED_DEBUG 
+	#ifdef DEBUG
+debugOut(id, "|<- inside change config=" + _webConfig);
+#endif
+#endif
+	filesAddString("web.temp", _webConfig);
+	return true;
+}
+
+bool webSetTail(String _webConfig)
+{
+#ifdef DETAILED_DEBUG 
+	#ifdef DEBUG
+debugOut(id, "|<- inside change config=" + _webConfig);
+#endif
+#endif
+	filesRename("web.config", "oldweb.config");
+	if (filesAddString("web.temp", _webConfig))
+	{
+		filesRename("web.temp", "web.config");
+	}
+	return true;
+}
+
+String webGetAllProperties()
+{
+	String result = "config=" + webGetWebConfig() + "//\n";
+	return result;
+}
+
+String webOnMessage(String _topic, String _payload)
+{
+	String result = WRONG_PROPERTY_NAME;
+	if (String(nodeGetTopic() + "/getconfig").equals(_topic)) return webGetWebConfig();
+	else
+		if (String(nodeGetTopic() + "/sethead").equals(_topic)) return String(webSetHead(_payload));
+		else
+			if (String(nodeGetTopic() + "/setbody").equals(_topic)) return String(webSetBody(_payload));
+			else
+				if (String(nodeGetTopic() + "/settail").equals(_topic)) return String(webSetTail(_payload));
+
+	return result;
+}
+
 #endif

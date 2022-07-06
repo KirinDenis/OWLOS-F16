@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------
+﻿/* ----------------------------------------------------------------------------
 Ready IoT Solution - OWLOS
 Copyright 2019, 2020 by:
 - Konstantin Brul (konstabrul@gmail.com)
@@ -38,19 +38,52 @@ OWLOS распространяется в надежде, что она буде
 Вы должны были получить копию Стандартной общественной лицензии GNU вместе с
 этой программой. Если это не так, см. <https://www.gnu.org/licenses/>.)
 --------------------------------------------------------------------------------------*/
-#ifndef noPlatformIO
 
-#include "src/Kernel.h"
+#include "BaseDriver.h"
+#ifdef USE_SENSOR_DRIVER
+#ifndef SENSOR_H
+#define SENSOR_H
 
-void setup()
+class SensorDriver : public BaseDriver
 {
-	//OWLOS Kernel Setup
-	kernelSetup();
-}
+public:
+	static int getPinsCount()
+	{
+		return 3;
+	}
 
-void loop()
-{
-	//OWLOS Kernel Loop
-	kernelLoop();
-}
+	static int getPinType(int pinIndex)
+	{
+		switch (pinIndex)
+		{
+		case PIN0_INDEX:
+			return DIGITAL_I_MASK | ANALOG_I_MASK;
+		case PIN1_INDEX:
+			return VCC5_MASK | VCC33_MASK;
+		case PIN2_INDEX:
+			return GND_MASK;
+		default:
+			return NO_MASK;
+		}
+	}
+
+	bool init();
+	void del();
+	bool begin(String _Topic);
+	bool query();
+	String getAllProperties();
+	bool publish();
+	String onMessage(String route, String _payload, int8_t transportMask);
+
+	bool getAnalog();
+	bool setAnalog(bool _analog, bool doEvent);
+
+	int getData();
+
+private:
+	bool analog = false;
+	int data = -1;
+	float sensorTriger = 0;
+};
+#endif
 #endif

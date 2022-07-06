@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------
+﻿/* ----------------------------------------------------------------------------
 Ready IoT Solution - OWLOS
 Copyright 2019, 2020 by:
 - Konstantin Brul (konstabrul@gmail.com)
@@ -38,19 +38,13 @@ OWLOS распространяется в надежде, что она буде
 Вы должны были получить копию Стандартной общественной лицензии GNU вместе с
 этой программой. Если это не так, см. <https://www.gnu.org/licenses/>.)
 --------------------------------------------------------------------------------------*/
-#ifndef noPlatformIO
+#ifndef HTTPSERVERTHINGS_H
+#define HTTPSERVERTHINGS_H
 
-#include "src/Kernel.h"
-
-void setup()
-{
-	//OWLOS Kernel Setup
-	kernelSetup();
-}
-
-void loop()
-{
-	//OWLOS Kernel Loop
-	kernelLoop();
-}
+#include "../config.h"
+#ifdef USE_ESP_DRIVER
+String decode(String param);
+String getContentType(String fileName);
+String GetNotFoundHTML();
+#endif
 #endif

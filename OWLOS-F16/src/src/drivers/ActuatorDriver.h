@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------
+﻿/* ----------------------------------------------------------------------------
 Ready IoT Solution - OWLOS
 Copyright 2019, 2020 by:
 - Konstantin Brul (konstabrul@gmail.com)
@@ -38,19 +38,63 @@ OWLOS распространяется в надежде, что она буде
 Вы должны были получить копию Стандартной общественной лицензии GNU вместе с
 этой программой. Если это не так, см. <https://www.gnu.org/licenses/>.)
 --------------------------------------------------------------------------------------*/
-#ifndef noPlatformIO
+#include "BaseDriver.h"
+#ifdef USE_ACTUATOR_DRIVER
 
-#include "src/Kernel.h"
+#ifndef ACTUATORDRIVER_H
+#define ACTUATORDRIVER_H
 
-void setup()
+class ActuatorDriver : public BaseDriver
 {
-	//OWLOS Kernel Setup
-	kernelSetup();
-}
+public:
+	static int getPinsCount()
+	{
+		return 2;
+	}
 
-void loop()
-{
-	//OWLOS Kernel Loop
-	kernelLoop();
-}
+	static uint16_t getPinType(int pinIndex)
+	{
+		switch (pinIndex)
+		{
+		case PIN0_INDEX:
+			return DIGITAL_O_MASK | ANALOG_O_MASK;
+		case PIN1_INDEX:
+			return GND_MASK;
+
+		default:
+			return NO_MASK;
+		}
+	}
+
+	bool init();
+	void del();
+	bool begin(String _topic);
+	bool query();
+	String getAllProperties();
+	bool publish();
+	String onMessage(String route, String _payload, int8_t transportMask);
+
+	bool getAnalog();
+	bool setAnalog(bool _analog, bool doEvent);
+
+	int getData();
+	bool setData(int _data, bool doEvent);
+
+	bool getPWM();
+	bool setPWM(bool _pwm, bool doEvent);
+
+	bool getInvert();
+	bool setInvert(bool _invert, bool doEvent);
+
+	int getPWMDelay();
+	bool setPWMDelay(int _pwmdelay, bool doEvent);
+
+private:
+	bool analog = false;
+	int data = 0;
+	bool pwm = false;
+	int pwmdelay = 1;
+	bool invert = false;
+};
+#endif
 #endif

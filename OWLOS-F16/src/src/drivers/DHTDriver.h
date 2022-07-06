@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------
+﻿/* ----------------------------------------------------------------------------
 Ready IoT Solution - OWLOS
 Copyright 2019, 2020 by:
 - Konstantin Brul (konstabrul@gmail.com)
@@ -38,19 +38,93 @@ OWLOS распространяется в надежде, что она буде
 Вы должны были получить копию Стандартной общественной лицензии GNU вместе с
 этой программой. Если это не так, см. <https://www.gnu.org/licenses/>.)
 --------------------------------------------------------------------------------------*/
-#ifndef noPlatformIO
 
-#include "src/Kernel.h"
+#include "BaseDriver.h"
+#ifdef USE_DHT_DRIVER
 
-void setup()
+#ifndef DHTDRIVER_H
+#define DHTDRIVER_H
+
+#pragma once
+#include "../libraries/DHT_sensor_library/DHT.h"
+
+#define DRIVER_ID "DHT"
+
+class DHTDriver : public BaseDriver
 {
-	//OWLOS Kernel Setup
-	kernelSetup();
-}
+public:
+	static int getPinsCount()
+	{
+		return 3;
+	}
 
-void loop()
-{
-	//OWLOS Kernel Loop
-	kernelLoop();
-}
+	static int getPinType(int pinIndex)
+	{
+		switch (pinIndex)
+		{
+		case PIN0_INDEX:
+			return DIGITAL_IO_MASK;
+		case PIN1_INDEX:
+			return VCC5_MASK | VCC33_MASK;
+		case PIN2_INDEX:
+			return GND_MASK;
+		default:
+			return NO_MASK;
+		}
+	}
+
+	bool DHTsetup(int dhttype);
+	float DHTgetTemperature(bool _celsius);
+	float DHTgetHumidity();
+	float DHTgetHeatIndex(bool _celsius);
+
+	bool begin(String _Topic);
+	bool query();
+	String getAllProperties();
+	bool publish();
+	String onMessage(String route, String _payload, int8_t transportMask);
+	int getDHTType();
+	bool setDHTType(int _dhttype);
+	bool getCelsius();
+	bool setCelsius(bool _celsius);
+	String getTemperature();
+	String getHumidity();
+	String getHeatIndex();
+
+	String getTemperatureHistoryData();
+	bool setTemperatureHistoryData(float _historydata);
+
+	String getHumidityHistoryData();
+	bool setHumidityHistoryData(float _historydata);
+
+	String getHeatIndexHistoryData();
+	bool setHeatIndexHistoryData(float _historydata);
+
+	//History file property Read<->Write wrappers
+	String readTemperatureHistoryFile();
+	bool writeTemperatureHistoryFile(float _historydata);
+
+private:
+	bool DHTSetuped = false;
+	bool DHTSetupResult = false;
+	DHT *dht = nullptr;
+	int dhttype = DHT22; //default DHT22
+	bool celsius = true;
+	String temperature = "nan";
+	String humidity = "nan";
+	String heatIndex = "nan";
+	int temperatureHistoryCount = 0;
+	int humidityHistoryCount = 0;
+	int heatIndexHistoryCount = 0;
+	float *temperatureHistoryData = new float[historySize]();
+	float *humidityHistoryData = new float[historySize]();
+	float *heatIndexHistoryData = new float[historySize]();
+
+	int currentTemperatureFile = 0;
+	int currentTemperatureFileIndex = 0;
+	int historyTemperatureFileCount = 0;
+	int *temperatureHistoryFilesIndexes = new int[filesIndexesSize]();
+};
+
+#endif
 #endif

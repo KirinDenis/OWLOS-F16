@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------
+/* ----------------------------------------------------------------------------
 Ready IoT Solution - OWLOS
 Copyright 2019, 2020 by:
 - Konstantin Brul (konstabrul@gmail.com)
@@ -38,19 +38,17 @@ OWLOS распространяется в надежде, что она буде
 Вы должны были получить копию Стандартной общественной лицензии GNU вместе с
 этой программой. Если это не так, см. <https://www.gnu.org/licenses/>.)
 --------------------------------------------------------------------------------------*/
-#ifndef noPlatformIO
 
-#include "src/Kernel.h"
+#ifndef MQTTCLIENT_H
+#define MQTTCLIENT_H
+#include "../config.h"
 
-void setup()
-{
-	//OWLOS Kernel Setup
-	kernelSetup();
-}
+#ifdef USE_MQTT
+void MQTTConnect();
+void MQTTDisconnect();
+bool MQTTBegin();
+void MQTTPublish(String _topic, String _payload);
+void MQTTSubscribe(String _topic);
 
-void loop()
-{
-	//OWLOS Kernel Loop
-	kernelLoop();
-}
+#endif
 #endif

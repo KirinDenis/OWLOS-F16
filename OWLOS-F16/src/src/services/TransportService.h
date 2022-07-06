@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------
+﻿/* ----------------------------------------------------------------------------
 Ready IoT Solution - OWLOS
 Copyright 2019, 2020 by:
 - Konstantin Brul (konstabrul@gmail.com)
@@ -38,19 +38,55 @@ OWLOS распространяется в надежде, что она буде
 Вы должны были получить копию Стандартной общественной лицензии GNU вместе с
 этой программой. Если это не так, см. <https://www.gnu.org/licenses/>.)
 --------------------------------------------------------------------------------------*/
-#ifndef noPlatformIO
+#ifndef TRANSPORTSERVICE_H
+#define TRANSPORTSERVICE_H
 
-#include "src/Kernel.h"
+#include "../config.h"
+#ifdef USE_ESP_DRIVER
 
-void setup()
-{
-	//OWLOS Kernel Setup
-	kernelSetup();
-}
+#define TransportID "Transport"
 
-void loop()
-{
-	//OWLOS Kernel Loop
-	kernelLoop();
-}
+#ifdef ARDUINO_ESP32_RELEASE_1_0_4
+
+#include <WiFiMulti.h>
+
+#define TransportID "Transport"
+bool transportBegin();
+
+void transportSubscribe(String topic);
+void transportLoop();
+bool transportPublish(String topic, String payload);
+
+WiFiMulti transportGetWifiMulti();
+
 #endif
+
+#ifdef ARDUINO_ESP8266_RELEASE_2_5_0
+#include <ESP8266WiFi.h>
+#include <ESP8266WiFiMulti.h>
+#include <ESP8266HTTPClient.h>
+
+bool transportBegin();
+bool transportAvailable();
+bool WiFiAccessPointReconnect();
+bool transportReconnect();
+bool MQTTReconnect();
+void transportSubscribe(String topic);
+void transportLoop();
+bool transportPublish(String topic, String payload);
+
+ESP8266WiFiMulti transportGetWifiMulti();
+
+#endif
+#endif
+
+#if defined(USE_ARDUINO_BOARDS) || !defined(USE_ESP_DRIVER)
+bool transportBegin();
+bool transportAvailable();
+void transportLoop();
+bool transportPublish(String topic, String payload);
+
+#endif
+
+#endif
+

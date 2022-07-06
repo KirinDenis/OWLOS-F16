@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------
+﻿/* ----------------------------------------------------------------------------
 Ready IoT Solution - OWLOS
 Copyright 2019, 2020 by:
 - Konstantin Brul (konstabrul@gmail.com)
@@ -38,19 +38,65 @@ OWLOS распространяется в надежде, что она буде
 Вы должны были получить копию Стандартной общественной лицензии GNU вместе с
 этой программой. Если это не так, см. <https://www.gnu.org/licenses/>.)
 --------------------------------------------------------------------------------------*/
-#ifndef noPlatformIO
+#include "../config.h"
 
-#include "src/Kernel.h"
+#ifdef USE_DRIVERS
 
-void setup()
-{
-	//OWLOS Kernel Setup
-	kernelSetup();
-}
+#ifndef DRIVERSERVICE_H
+#define DRIVERSERVICE_H
 
-void loop()
-{
-	//OWLOS Kernel Loop
-	kernelLoop();
-}
+#include "../drivers/BaseDriver.h"
+
+#ifdef USE_ACTUATOR_DRIVER
+#include "../drivers/ActuatorDriver.h"
+#endif
+
+#ifdef USE_SENSOR_DRIVER
+#include "../drivers/SensorDriver.h"
+#endif
+
+#ifdef USE_DHT_DRIVER
+#include "../drivers/DHTDriver.h"
+#endif
+
+#ifdef USE_LCD_DRIVER
+#include "../drivers/LCDDriver.h"
+#endif
+
+#ifdef USE_STEPPER_DRIVER
+#include "../drivers/StepperDriver.h"
+#endif
+
+#ifdef USE_VALVE_DRIVER
+#include "../drivers/ValveDriver.h"
+#endif
+
+void driversInit(String _topic);
+void driversBegin(String nodeTopic);
+void driversLoop();
+String driversGetAccessable();
+void driversSubscribe();
+void driversCallback(String _topic, String _payload);
+String driversGetDriversId();
+BaseDriver *driversGetDriver(String id);
+String driversGetDriverProperty(String id, String property);
+String driversSetDriverProperty(String id, String property, String value);
+String driversGetDriverProperties(String id);
+String driversGetAllDriversProperties();
+
+bool checkPinBusy(int pin);
+String driversGetBusyPins();
+String driversGetPinsMap();
+int driversPinNameToValue(String pinName);
+String driversValueToPinName(int pinValue);
+
+bool driversSaveList();
+String driversLoadFromConfig();
+
+String driversAdd(int type, String id, String pins);
+
+String driversChangePin(String pinName, String driverId, int driverPinIndex);
+String driversDelete(String id);
+
+#endif
 #endif

@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------
+﻿/* ----------------------------------------------------------------------------
 Ready IoT Solution - OWLOS
 Copyright 2019, 2020 by:
 - Konstantin Brul (konstabrul@gmail.com)
@@ -38,19 +38,33 @@ OWLOS распространяется в надежде, что она буде
 Вы должны были получить копию Стандартной общественной лицензии GNU вместе с
 этой программой. Если это не так, см. <https://www.gnu.org/licenses/>.)
 --------------------------------------------------------------------------------------*/
-#ifndef noPlatformIO
 
-#include "src/Kernel.h"
+#include "../config.h"
 
-void setup()
-{
-	//OWLOS Kernel Setup
-	kernelSetup();
-}
+#ifndef FILESERVICES_H
+#define FILESERVICES_H
 
-void loop()
-{
-	//OWLOS Kernel Loop
-	kernelLoop();
-}
+bool filesBegin();
+bool filesLoop();
+bool filesExists(String fileName);
+int filesGetSize(String fileName);
+bool filesDelete(String fileName); //API
+bool filesDeleteAllFiles();        //API
+bool filesRename(String source, String dest);
+
+String filesReadString(String fileName); //API
+bool filesWriteStringDirect(String fileName, String value); //API
+bool filesWriteString(String fileName, String value);
+bool filesAppendString(String fileName, String value);
+bool filesAddString(String fileName, String value);
+
+int filesReadInt(String fileName);
+bool filesWriteInt(String fileName, int value);
+
+float filesReadFloat(String fileName);
+bool filesWriteFloat(String fileName, float value);
+
+String filesGetList(String path); //API
+bool filesWriteStructure(String fileName, void *value);
+
 #endif
