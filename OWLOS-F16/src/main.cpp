@@ -26,7 +26,7 @@ volatile int prevM = -1;
 #define MOTION_INTERVAL 5
 
 volatile int currentLightPWM = LIGHT_ON_PWM;
-volatile int lastLishtPWM = 0;
+volatile int lightPWMHistory[4];
 volatile int pwm = 0;
 volatile int lastLightSensor = 0;
 volatile int lightBalance = 0;
@@ -48,12 +48,13 @@ void IRAM_ATTR onTimerHandler()
 
   noInterrupts();
 
-    lastLishtPWM = pwm;
+    
     int LSn = (analogRead(A0) - LIGHT_SENSOR_UP) / 30 * 30; 
     float PL = LIGHT_OFF_PWM / LIGHT_SENSOR_RANGE; //PWM to Light Sensor
-    pwm = (LIGHT_SENSOR_RANGE - LSn) * PL;
+    int pwm = (LIGHT_SENSOR_RANGE - LSn) * PL;
     //Anti light sensor bounce 
-    
+
+
     
     if ((pwm > LIGHT_OFF_PWM - ANTI_LIGHT_BOUNCE * 2))
     {
@@ -64,13 +65,24 @@ void IRAM_ATTR onTimerHandler()
     {
         pwm = LIGHT_ON_PWM;
     }
+/*
+    lightPWMHistory[0] = lightPWMHistory[1] = lightPWMHistory[2] = lightPWMHistory[3] = pwm; 
+    lightPWMHistory[3] = pwm = (lightPWMHistory[0] + lightPWMHistory[1] + lightPWMHistory[2] + lightPWMHistory[3]) / 4;
+   //lastLishtPWM = pwm;
+   Serial.println("---");
+   Serial.println(pwm);
+   Serial.println(lightPWMHistory[0]);
+   Serial.println(lightPWMHistory[1]);
+   Serial.println(lightPWMHistory[2]);
+   Serial.println(lightPWMHistory[3]);   
+   Serial.println("-----");
+
     /*
     else 
     {
       pwm = pwm / ANTI_LIGHT_BOUNCE * ANTI_LIGHT_BOUNCE;
     }
     */
-   Serial.println(pwm);
 
   if (lastMotionChange + MOTION_INTERVAL * 1000 < millis())
   {
@@ -80,7 +92,7 @@ void IRAM_ATTR onTimerHandler()
       digitalWrite(D6, beep);
     }    
     // light off
-    if (currentLightPWM <= pwm * NO_MOTION_LIGHT)
+    if (currentLightPWM <= (pwm + LIGHT_OFF_PWM / 2))
     {
       currentLightPWM += LIGHT_OFF_CHANGE_STEP_PWM;
       analogWrite(D1, currentLightPWM);       
