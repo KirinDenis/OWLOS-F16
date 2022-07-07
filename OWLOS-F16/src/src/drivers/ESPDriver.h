@@ -47,7 +47,7 @@ OWLOS распространяется в надежде, что она буде
 #include "WifiDriver.h"
 #include "NetworkDriver.h"
 
-#define FIRMWARE_VERSION "OWLOS version 1.11 (RC)"
+#define FIRMWARE_VERSION "OWLOS F-16 version 1.01 (Alpha)"
 #define FIRMWARE_BUILD_NUMBER 108
 
 #ifdef ARDUINO_ESP32_RELEASE_1_0_4

@@ -202,7 +202,9 @@ void sendResponseHeader(int HTTPResponseCode, String contentType, String Content
 
 void send(int HTTPResponseCode, String contentType, String content, WiFiClient client)
 {
+	
 	sendResponseHeader(HTTPResponseCode, contentType, "", client);
+	
 	//content += "\n\r";
 	client.write(content.c_str(), content.length());
 }
@@ -298,6 +300,7 @@ void handleNotFound(WiFiClient client)
 	}
 
 	send(404, "text/html", GetNotFoundHTML(), client);
+
 }
 
 //HTTPServer API -----------------------------------------------
@@ -307,21 +310,27 @@ void handleGetLog(WiFiClient client)
 
 	if (argsCount > 0)
 	{
+
 		if (argName[0].equals("number"))
 		{
+
 			String log = "wrong log number argument";
 			if (arg[0].equals("1"))
 			{
+
 				log = filesReadString(DEBUG_LOG_FILE1_NAME);
 			}
 			else
 			{
+
 				log = filesReadString(DEBUG_LOG_FILE2_NAME);
 			}
+
 			send(200, "text/plain", log, client);
 			return;
 		}
 	}
+
 	handleNotFound(client);
 }
 
@@ -544,23 +553,14 @@ void handleGetWebProperty(WiFiClient client)
 			{
 				sendResponseHeader(200, "text/html", "", client);
 				client.write(download);
-
 				download.close();
-				return;
 			}
-			/*
-			if ((configProperties.length() == 0) || (configProperties.equals(WRONG_PROPERTY_NAME)))
+			else //default 
 			{
-				configProperties = "wrong web property: " + arg[0);
-				send(404, "text/html", configProperties);
-				return;
+				sendResponseHeader(200, "text/html", "", client);
+				client.write("{\"language\":\"en\",\"speak\":false,\"voice\":0,\"widgetssize\":150,\"dashboards\":[{\"id\":\"main\",\"widgets\":[]}],\"things\":[{\"host\":\"\",\"thingRefreshInterval\":20000,\"thingnickname\":\"local\",\"_networkStatus\":0,\"drivers\":[],\"pins\":[],\"driversPins\":[],\"accessableDrivers\":[]}]}");
 			}
-			else
-			{
-				send(200, "text/plain", configProperties);
-				return;
-			}
-			*/
+			return;			
 		}
 	}
 	handleNotFound(client);
@@ -568,7 +568,6 @@ void handleGetWebProperty(WiFiClient client)
 
 void handleReset(WiFiClient client)
 {
-
 	send(200, "text/plain", "1", client);
 	nodeSetESPReset(1);
 }

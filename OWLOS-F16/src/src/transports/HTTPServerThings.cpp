@@ -118,7 +118,7 @@ String getContentType(String fileName)
 	return F("text/plain");
 }
 
-static const char OWLOSLogo[] PROGMEM = "<font color='#62add0' size='2'><pre><code><span>\n"
+static const char OWLOSLogo[]  = "<font color='#62add0' size='2'><pre><code><span>\n"
 										"000000001                       100000000\n"
 										"0000000000000               0000000000000\n"
 										"000000000010000000     000000010000000000\n"
@@ -139,9 +139,14 @@ static const char OWLOSLogo[] PROGMEM = "<font color='#62add0' size='2'><pre><co
 										"\n"
 										"</span></code></pre></font><br>";
 
-static const char OWLOSCopyLeft[] PROGMEM = "&#x1F30D;<a href='https://github.com/KirinDenis/owlos' target='_blank'>GitHub OWLOS</a><br>\n"
-											"&#x1F409;Copyright 2019, 2020 by:\n"
+static const char OWLOSCopyLeft[]  = "&#x1F30D;<a href='https://github.com/KirinDenis/owlos' target='_blank'>GitHub OWLOS</a><br>\n"
+											"&#x1F409;Copyright 2019, 2020, 2021, 2022 by:\n"
 											"	Serhii Lehkii (sergey@light.kiev.ua)\n"
+											"	Ddone Deedone (https://techadv.xyz/)\n"
+											"	Serhii Demyanov (demianfog@gmail.com)\n"
+											"	Mónica (rovt@ua.fm)\n"
+											"	Yan Sokolov (Dadras279@gmail.com)\n"
+											"	Boris Pavlov (hiroyashy@gmail.com)\n"
 											"	Konstantin Brul (konstabrul@gmail.com)\n"
 											"	Vitalii Glushchenko (cehoweek@gmail.com)\n"
 											"	Stanislav Kvashchuk (skat@ukr.net)\n"
@@ -151,13 +156,12 @@ static const char OWLOSCopyLeft[] PROGMEM = "&#x1F30D;<a href='https://github.co
 											"&#x1F4E1;HTTPServer API endpoints:\n";
 
 String GetNotFoundHTML()
-{
-
-	return "<html><header><title>" + String(FIRMWARE_VERSION) + FPSTR("</title>"
+{		
+	return "<html><header><title>" + String(FIRMWARE_VERSION) + "</title>"
 																	  "<style>a{color: #3b99c4;text-decoration: none;} a:hover {text-decoration: underline;} a:active {text-decoration: underline;}table td, table td * {vertical-align: top;}</style></header>"
-																	  "<body  bgcolor='#272B30'><font color='#272B30'><table><tr><td>") +
+																	  "<body  bgcolor='#272B30'><font color='#272B30'><table><tr><td>" +
 		   OWLOSLogo + "</td><td><pre><code><span><font color='#89c2dc' size=4><br>&#x1F989;<b>" +
-		   FIRMWARE_VERSION + "</b>\n" + OWLOSCopyLeft + "</span></code></pre></font></td></tr></table></body>";
+		   String(FIRMWARE_VERSION) + "</b>\n" + OWLOSCopyLeft + "</span></code></pre></font></td></tr></table></body>"; 
 }
 #endif
 #endif

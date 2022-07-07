@@ -124,7 +124,7 @@ void IRAM_ATTR onTimerHandler()
   interrupts();
 }
 
-void setup()
+void setup1()
 {
   Serial.begin(115200);
   delay(100);
@@ -142,7 +142,7 @@ void setup()
 
   ticker.attach(0.01, onTimerHandler);
 }
-void loop()
+void loop1()
 {
   // PWM Pin debug
   if (Serial.available())
