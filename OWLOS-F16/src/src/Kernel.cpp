@@ -43,6 +43,7 @@ OWLOS распространяется в надежде, что она буде
 
 #ifdef USE_ESP_DRIVER
 #include "drivers/ESPDriver.h"
+#include "drivers/F16Driver.h"
 #include "services/TransportService.h"
 #include "services/UpdateService.h"
 #endif
@@ -50,6 +51,11 @@ OWLOS распространяется в надежде, что она буде
 #include "services/DriverService.h"
 #include "services/FileService.h"
 #include "services/ScriptService.h"
+
+#define F16_Driver_Id "f16"
+#define F16_Driver_Pins "D7,A0,D1,D6,GND"
+
+F16Driver *_F16Driver = nullptr;
 
 /*-----------------------------------------------------------------------------
 OWLOS Kernel setup section 
@@ -93,6 +99,13 @@ bool kernelSetup()
 	//Ther is not connected at begin(), see Main::Loop() transportReconnect() function using
 	//The begin() just setup connection properties
 	transportBegin();
+
+	//F16 Driver 
+    debugOut("F6-TRACERT", "A1");
+    driversAdd(F16_DRIVER_TYPE, F16_Driver_Id, F16_Driver_Pins);
+	debugOut("F6-TRACERT", "A2");
+    _F16Driver = (F16Driver*)driversGetDriver(F16_Driver_Id);
+	debugOut("F6-TRACERT", "A3");
 
 	//The OWLOS harvester started up and went quietly...
 #ifdef DETAILED_DEBUG

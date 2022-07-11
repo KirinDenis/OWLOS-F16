@@ -204,6 +204,18 @@ String driversGetAccessable()
 		result += "pintypedecoded" + String(i) + "=" + decodePinTypes(ValveDriver::getPinType(i)) + "\n";
 	}
 #endif
+
+#ifdef USE_F16_DRIVER
+	result += "name:F16Driver\n";
+	result += "type=" + String(F16_DRIVER_TYPE) + "\n";
+	result += "pinscount=" + String(F16Driver::getPinsCount()) + "\n";
+	for (int i = 0; i < F16Driver::getPinsCount(); i++)
+	{
+		result += "pintype" + String(i) + "=" + F16Driver::getPinType(i) + "\n";
+		result += "pintypedecoded" + String(i) + "=" + decodePinTypes(F16Driver::getPinType(i)) + "\n";
+	}
+#endif
+
 	return result;
 }
 
@@ -608,6 +620,44 @@ String driversAdd(int type, String id, String pins) //String D1,D3,GND,....
 		dhtDriver->init(id);
 		dhtDriver->id = id;
 		driversList[freeIndex] = dhtDriver;
+	}
+	else
+#endif	
+#ifdef USE_F16_DRIVER
+	if (type == F16_DRIVER_TYPE)
+	{
+		debugOut("F6-TRACERT", "B1");
+#ifdef DETAILED_DEBUG
+#ifdef DEBUG
+		debugOut("pin", String(pinCount));
+#endif
+#endif
+debugOut("F6-TRACERT", "B2");
+		if (pinCount != F16Driver::getPinsCount())
+		{
+			return "F16Driver's pins quantity does not match, must be " + String(F16Driver::getPinsCount());
+		}
+
+		result = checkDriverPin(_pins[PIN0_INDEX], F16Driver::getPinType(PIN0_INDEX)) + checkDriverPin(_pins[PIN1_INDEX], F16Driver::getPinType(PIN1_INDEX));
+
+#ifdef DETAILED_DEBUG
+#ifdef DEBUG
+		debugOut("DCResult", result);
+#endif
+#endif
+
+		if (result.length() != 0)
+			return result;
+
+		result = setDriverPin(_pins[PIN0_INDEX], id, PIN0_INDEX, F16Driver::getPinType(PIN0_INDEX)) + setDriverPin(_pins[PIN1_INDEX], id, PIN1_INDEX, F16Driver::getPinType(PIN1_INDEX));
+
+		if (result.length() != 0)
+			return result;
+
+		F16Driver *f16Driver = new F16Driver;
+		f16Driver->id = id;
+		f16Driver->init();
+		driversList[freeIndex] = f16Driver;
 	}
 	else
 #endif

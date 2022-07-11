@@ -902,7 +902,7 @@ void initPins()
 
 	pin.name = "D1";
 	pin.GPIONumber = pinNameToValue(pin.name);
-	pin.pinTypes = DIGITAL_IO_MASK | SCL_MASK;
+	pin.pinTypes = DIGITAL_IO_MASK | ANALOG_O_MASK | SCL_MASK;
 	pin.chipNumber = 20;
 	pin.location = "l2";
 	addPin(pin);

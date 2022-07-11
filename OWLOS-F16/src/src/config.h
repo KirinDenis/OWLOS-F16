@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------------
 Ready IoT Solution - OWLOS
-Copyright 2019, 2020 by:
+Copyright 2019, 2020, 2021, 2022 by:
 - Konstantin Brul (konstabrul@gmail.com)
 - Vitalii Glushchenko (cehoweek@gmail.com)
 - Denys Melnychuk (meldenvar@gmail.com)
@@ -137,8 +137,9 @@ OWLOS распространяется в надежде, что она буде
 //Включить в сборку драйвера 
 #define USE_DRIVERS    
     #ifdef USE_DRIVERS
+        #define USE_F16_DRIVER
         //Универсальный драйвер исполнительных устройств (цифровых и аналоговых)(с подержкой ШИМ)    
-        //#define USE_ACTUATOR_DRIVER
+        #define USE_ACTUATOR_DRIVER
 
         //Универсальный драйвер сенсоров (датчиков)(цифровых и аналоговых)
         //#define USE_SENSOR_DRIVER

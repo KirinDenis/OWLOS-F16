@@ -1,6 +1,6 @@
 ﻿/* ----------------------------------------------------------------------------
 Ready IoT Solution - OWLOS
-Copyright 2019, 2020 by:
+Copyright 2019, 2020, 2021, 2022 by:
 - Konstantin Brul (konstabrul@gmail.com)
 - Vitalii Glushchenko (cehoweek@gmail.com)
 - Denys Melnychuk (meldenvar@gmail.com)
@@ -65,6 +65,7 @@ OWLOS распространяется в надежде, что она буде
 #define PIN1_INDEX 1
 #define PIN2_INDEX 2
 #define PIN3_INDEX 3
+#define PIN4_INDEX 4
 
 
 class BaseDriver

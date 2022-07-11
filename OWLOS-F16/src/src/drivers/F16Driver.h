@@ -1,9 +1,6 @@
-﻿/* ----------------------------------------------------------------------------
+/* ----------------------------------------------------------------------------
 Ready IoT Solution - OWLOS
-Copyright 2019, 2020 by:
-- Konstantin Brul (konstabrul@gmail.com)
-- Vitalii Glushchenko (cehoweek@gmail.com)
-- Denys Melnychuk (meldenvar@gmail.com)
+Copyright 2022 by:
 - Denis Kirin (deniskirinacs@gmail.com)
 
 This file is part of Ready IoT Solution - OWLOS
@@ -38,69 +35,50 @@ OWLOS распространяется в надежде, что она буде
 Вы должны были получить копию Стандартной общественной лицензии GNU вместе с
 этой программой. Если это не так, см. <https://www.gnu.org/licenses/>.)
 --------------------------------------------------------------------------------------*/
-#include "../config.h"
-
-#ifdef USE_DRIVERS
-
-#ifndef DRIVERSERVICE_H
-#define DRIVERSERVICE_H
-
-#include "../drivers/BaseDriver.h"
-
-#ifdef USE_ACTUATOR_DRIVER
-#include "../drivers/ActuatorDriver.h"
-#endif
-
-#ifdef USE_SENSOR_DRIVER
-#include "../drivers/SensorDriver.h"
-#endif
-
-#ifdef USE_DHT_DRIVER
-#include "../drivers/DHTDriver.h"
-#endif
-
-#ifdef USE_LCD_DRIVER
-#include "../drivers/LCDDriver.h"
-#endif
-
-#ifdef USE_STEPPER_DRIVER
-#include "../drivers/StepperDriver.h"
-#endif
-
-#ifdef USE_VALVE_DRIVER
-#include "../drivers/ValveDriver.h"
-#endif
-
+#include "BaseDriver.h"
 #ifdef USE_F16_DRIVER
-#include "../drivers/F16Driver.h"
-#endif
 
-void driversInit(String _topic);
-void driversBegin(String nodeTopic);
-void driversLoop();
-String driversGetAccessable();
-void driversSubscribe();
-void driversCallback(String _topic, String _payload);
-String driversGetDriversId();
-BaseDriver *driversGetDriver(String id);
-String driversGetDriverProperty(String id, String property);
-String driversSetDriverProperty(String id, String property, String value);
-String driversGetDriverProperties(String id);
-String driversGetAllDriversProperties();
+#ifndef F16DRIVER_H
+#define F16DRIVER_H
 
-bool checkPinBusy(int pin);
-String driversGetBusyPins();
-String driversGetPinsMap();
-int driversPinNameToValue(String pinName);
-String driversValueToPinName(int pinValue);
+class F16Driver : public BaseDriver
+{
+public:
+	static int getPinsCount()
+	{
+		return 5;
+	}
 
-bool driversSaveList();
-String driversLoadFromConfig();
+    //D7,A0,D1,D6,GND
+	static uint16_t getPinType(int pinIndex)
+	{
+		switch (pinIndex)
+		{
+		case PIN0_INDEX:
+			return DIGITAL_I_MASK;
+		case PIN1_INDEX:
+			return ANALOG_I_MASK;
+		case PIN2_INDEX:
+			return ANALOG_O_MASK;
+		case PIN3_INDEX:
+			return DIGITAL_O_MASK;
+		case PIN4_INDEX:
+			return GND_MASK;
+		default:
+			return NO_MASK;
+		}
+	}
 
-String driversAdd(int type, String id, String pins);
+	bool init();
+	void del();
+	bool begin(String _topic);
+	bool query();
+	String getAllProperties();
+	bool publish();
+	String onMessage(String route, String _payload, int8_t transportMask);
 
-String driversChangePin(String pinName, String driverId, int driverPinIndex);
-String driversDelete(String id);
+private:
 
+};
 #endif
 #endif

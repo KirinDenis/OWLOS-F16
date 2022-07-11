@@ -95,6 +95,7 @@ OWLOS распространяется в надежде, что она буде
 #define NETWORK_DRIVER_TYPE 12
 #define ESP_DRIVER_TYPE 13
 #define CONFIG_DRIVER_TYPE 14
+#define F16_DRIVER_TYPE 15
 
 char *stringToChar(String src);
 #ifdef DEBUG
