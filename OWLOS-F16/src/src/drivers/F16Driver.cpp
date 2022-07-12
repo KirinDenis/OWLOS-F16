@@ -78,7 +78,7 @@ volatile bool beep = true;
 volatile unsigned long lastMotionChange = 0;
 
 //-------------------
-volatile byte mLightBright = 50;
+volatile byte mLightBright = 0;
 volatile byte nmLightBright = 0;
 volatile byte mLightDark = 100;
 volatile byte nmLightDark = 20;
@@ -94,7 +94,7 @@ uint16_t PercentToPWM(uint8_t percent)
   {
     percent = 100;
   }
-  return LIGHT_OFF_PWM - (LIGHT_OFF_PWM / 100 * percent);
+  return LIGHT_OFF_PWM - ((float)LIGHT_OFF_PWM / 100.0f * (float)percent);
 }
 
 // Light sensor value(data) to percent
@@ -102,6 +102,7 @@ uint16_t PercentToPWM(uint8_t percent)
 // LIGHT_SENSOR_DARK   - 0%   (default value 1024)
 uint8_t LStoPercent(uint16_t value)
 {
+
   if (value > LIGHT_SENSOR_DARK)
   {
     value = LIGHT_SENSOR_DARK;
@@ -110,8 +111,7 @@ uint8_t LStoPercent(uint16_t value)
   {
     value = LIGHT_SENSOR_BRIGHT;
   }
-
-  return 100 - ((value - LIGHT_SENSOR_BRIGHT) / (LIGHT_SENSOR_RANGE / 100));
+  return 100 - ((value - (float)LIGHT_SENSOR_BRIGHT) / ((float)LIGHT_SENSOR_RANGE / 100.0f));
 }
 
 void IRAM_ATTR onMotionDetectHandler()
@@ -124,28 +124,36 @@ void IRAM_ATTR onTimerHandler()
 
   noInterrupts();
 
-  uint8_t LSPercent = LStoPercent(analogRead(A0) - LIGHT_SENSOR_DARK) / 10 * 10; // 10% sensor bounce
-  
+  uint8_t LSPercent = LStoPercent(analogRead(A0)) / 10 * 10; // 10% sensor bounce
+
   // if motion detected
   uint16_t PWM;
   if (lastMotionChange + MOTION_INTERVAL * 1000 > millis())
   {
-    PWM = PercentToPWM(100 - LSPercent * ((mLightDark - mLightBright) / 100));
+    PWM = PercentToPWM((100.0f - (float)LSPercent) / (float)(100.0f / (mLightDark - mLightBright)));
   }
   else
   {
-    PWM = PercentToPWM(100 - LSPercent * ((nmLightDark - nmLightBright) / 100));
+    PWM = PercentToPWM((100.0f - (float)LSPercent) / (100.0f / (float)(nmLightDark - nmLightBright)));
   }
 
-  if (currentLightPWM <= PWM)
+  // debugOut("LSp", String(LSPercent));
+  // debugOut("PWMp", String(100.0f - (float)LSPercent * (float)((mLightDark - mLightBright) / 100.0f)));
+  // debugOut("PWM", String(PWM));
+
+  if (currentLightPWM != PWM)
   {
-    currentLightPWM += LIGHT_OFF_CHANGE_STEP_PWM;
-    analogWrite(D1, currentLightPWM);
-  }
-  else
-  {
-    currentLightPWM -= LIGHT_OFF_CHANGE_STEP_PWM;
-    analogWrite(D1, currentLightPWM);
+
+    if (currentLightPWM < PWM)
+    {
+      currentLightPWM += LIGHT_OFF_CHANGE_STEP_PWM;
+      analogWrite(D1, currentLightPWM);
+    }
+    else
+    {
+      currentLightPWM -= LIGHT_OFF_CHANGE_STEP_PWM;
+      analogWrite(D1, currentLightPWM);
+    }
   }
 
   interrupts();
@@ -187,10 +195,19 @@ bool F16Driver::query()
 
 String F16Driver::getAllProperties()
 {
+  volatile byte mLightBright = 0;
+  volatile byte nmLightBright = 0;
+  volatile byte mLightDark = 100;
+  volatile byte nmLightDark = 20;
+
   return BaseDriver::getAllProperties() +
-         "analog=" + String(pwm) + "//br\n"
-                                   "data=" +
-         String(LIGHT_SENSOR_BRIGHT) + "//is\n";
+         "mlightb=" + String(mLightBright) + "//i\n"
+                                             "nmlightb=" +
+         String(nmLightBright) + "//i\n"
+                                 "mlightd=" +
+         String(mLightDark) + "//i\n"
+                              "nmlightd=" +
+         String(nmLightDark) + "//i\n";
 }
 
 bool F16Driver::publish()
@@ -205,9 +222,55 @@ bool F16Driver::publish()
 String F16Driver::onMessage(String route, String _payload, int8_t transportMask)
 {
   String result = BaseDriver::onMessage(route, _payload, transportMask);
-  return result;
-  // if (!result.equals(WRONG_PROPERTY_NAME))
-  //	return result;
-};
+
+  if (!result.equals(WRONG_PROPERTY_NAME))
+   return result;
+  
+    if (matchRoute(route, topic, "/getmlightb"))
+    {
+      result = String(mLightBright);
+    }
+    else if (matchRoute(route, topic, "/setmlightb"))
+    {
+      mLightBright = atoi(_payload.c_str());
+      result = "1";
+    }
+    else
+    if (matchRoute(route, topic, "/getnmlightb"))
+    {
+      result = String(nmLightBright);
+    }
+    else if (matchRoute(route, topic, "/setnmlightb"))
+    {
+      nmLightBright = atoi(_payload.c_str());
+      result = "1";
+    }
+    else
+    if (matchRoute(route, topic, "/getmlightd"))
+    {
+      result = String(mLightDark);
+    }
+    else if (matchRoute(route, topic, "/setmlightd"))
+    {
+      mLightDark = atoi(_payload.c_str());
+      result = "1";
+    }
+    else
+    if (matchRoute(route, topic, "/getnmlightd"))
+    {
+      result = String(nmLightDark);
+    }
+    else if (matchRoute(route, topic, "/setnmlightd"))
+    {
+      nmLightDark = atoi(_payload.c_str());
+      result = "1";
+    }
+    else
+    {
+      result = WRONG_PROPERTY_NAME;
+    }
+
+    return result;
+  };
 
 #endif
