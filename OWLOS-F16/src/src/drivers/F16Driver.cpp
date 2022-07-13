@@ -34,7 +34,22 @@ OWLOS распространяется в надежде, что она буде
 
 Вы должны были получить копию Стандартной общественной лицензии GNU вместе с
 этой программой. Если это не так, см. <https://www.gnu.org/licenses/>.)
---------------------------------------------------------------------------------------*/
+
+-------------------------------------------------------------------------------------------------------------------------
+
+    _,.---._            ,-.-.             _,.---._      ,-,--.             _,---.                ,-----.--.      .,-.  
+  ,-.' , -  `. ,-..-.-./  \==\  _.-.    ,-.' , -  `.  ,-.'-  _\         .-`.' ,  \              /` ` - /==/     / \==\ 
+ /==/_,  ,  - \|, \=/\=|- |==|.-,.'|   /==/_,  ,  - \/==/_ ,_.'        /==/_  _.-' ,--.--------.`-'-. -|==|    / -/==/ 
+|==|   .=.     |- |/ |/ , /==/==|, |  |==|   .=.     \==\  \          /==/-  '..-./==/,  -   , -\   | `|==|   /- /==/  
+|==|_ : ;=:  - |\, ,     _|==|==|- |  |==|_ : ;=:  - |\==\ -\         |==|_ ,    /\==\.-.  - ,-./   | -|==|  /  /==/   
+|==| , '='     || -  -  , |==|==|, |  |==| , '='     |_\==\ ,\        |==|   .--'  `--`--------`    | `|==| /. / \==\  
+ \==\ -    ,_ /  \  ,  - /==/|==|- `-._\==\ -    ,_ //==/\/ _ |       |==|-  |                    .-','|==|| _ \_/\==\ 
+  '.='. -   .'   |-  /\ /==/ /==/ - , ,/'.='. -   .' \==\ - , /       /==/   \                   /     \==\\ . -  /==/ 
+    `--`--''     `--`  `--`  `--`-----'   `--`--''    `--`---'        `--`---'                   `-----`---`'----`--`  
+
+              16th floor. IoT smart lamp driver with motion and light sensors. ESP8266 friendly.
+
+-------------------------------------------------------------------------------------------------------------------------*/
 
 #include "F16Driver.h"
 #ifdef USE_F16_DRIVER
@@ -73,15 +88,27 @@ volatile int lightPWMHistory[4];
 volatile int pwm = 0;
 volatile int lastLightSensor = 0;
 volatile int lightBalance = 0;
-volatile bool beep = true;
 
 volatile unsigned long lastMotionChange = 0;
 
 //-------------------
-volatile byte mLightBright = 0;
-volatile byte nmLightBright = 0;
-volatile byte mLightDark = 100;
-volatile byte nmLightDark = 20;
+volatile uint8 mLightBright = 0;
+volatile uint8 nmLightBright = 0;
+volatile uint8 mLightDark = 100;
+volatile uint8 nmLightDark = 20;
+
+volatile uint16 mTime = MOTION_INTERVAL;
+
+#define LIGHT_MODE_OFF 0
+#define LIGHT_MODE_ON 1
+#define LIGHT_MODE_AUTO 2
+#define LIGHT_MODE_AUTO_MOTION 3
+
+volatile uint8 lightMode = LIGHT_MODE_AUTO_MOTION;
+
+volatile bool beepMode = 1; // 1 enabled, 0 disabled
+volatile uint8 beepTime = 4;
+volatile bool beep = true;
 
 Ticker ticker;
 
@@ -121,39 +148,63 @@ void IRAM_ATTR onMotionDetectHandler()
 
 void IRAM_ATTR onTimerHandler()
 {
-
   noInterrupts();
 
-  uint8_t LSPercent = LStoPercent(analogRead(A0)) / 10 * 10; // 10% sensor bounce
-
-  // if motion detected
-  uint16_t PWM;
-  if (lastMotionChange + MOTION_INTERVAL * 1000 > millis())
+  if (lightMode == LIGHT_MODE_OFF)
   {
-    PWM = PercentToPWM((100.0f - (float)LSPercent) / (float)(100.0f / (mLightDark - mLightBright)));
+    analogWrite(D1, LIGHT_OFF_PWM);
   }
-  else
-  {
-    PWM = PercentToPWM((100.0f - (float)LSPercent) / (100.0f / (float)(nmLightDark - nmLightBright)));
-  }
-
-  // debugOut("LSp", String(LSPercent));
-  // debugOut("PWMp", String(100.0f - (float)LSPercent * (float)((mLightDark - mLightBright) / 100.0f)));
-  // debugOut("PWM", String(PWM));
-
-  if (currentLightPWM != PWM)
+  else if (lightMode == LIGHT_MODE_AUTO || lightMode == LIGHT_MODE_AUTO_MOTION)
   {
 
-    if (currentLightPWM < PWM)
+    uint8_t LSPercent = LStoPercent(analogRead(A0)) / 10 * 10; // 10% sensor bounce
+
+    // if motion detected
+    uint16_t PWM;
+    if (lastMotionChange + mTime * 1000 > millis() || lightMode == LIGHT_MODE_AUTO)
     {
-      currentLightPWM += LIGHT_OFF_CHANGE_STEP_PWM;
-      analogWrite(D1, currentLightPWM);
+      PWM = PercentToPWM((100.0f - (float)LSPercent) / (float)(100.0f / (mLightDark - mLightBright)));
     }
     else
     {
-      currentLightPWM -= LIGHT_OFF_CHANGE_STEP_PWM;
-      analogWrite(D1, currentLightPWM);
+      PWM = PercentToPWM((100.0f - (float)LSPercent) / (100.0f / (float)(nmLightDark - nmLightBright)));
     }
+
+    if (currentLightPWM != PWM)
+    {
+
+      if (currentLightPWM < PWM)
+      {
+        currentLightPWM += LIGHT_OFF_CHANGE_STEP_PWM;
+        analogWrite(D1, currentLightPWM);
+      }
+      else
+      {
+        currentLightPWM -= LIGHT_OFF_CHANGE_STEP_PWM;
+        analogWrite(D1, currentLightPWM);
+      }
+    }
+  }
+  else // LIGHT_MODE_ON and any others valies of lightMode - light is ON
+  {
+    analogWrite(D1, LIGHT_ON_PWM);
+  }
+
+  if (beepMode && lastMotionChange + beepTime * 1000 > millis())
+  {
+    beep = !beep;
+    if (beep)
+    {
+      digitalWrite(D6, HIGH);
+    }
+    else
+    {
+      digitalWrite(D6, LOW);
+    }
+  }
+  else
+  {
+    digitalWrite(D6, LOW);
   }
 
   interrupts();
@@ -185,6 +236,15 @@ bool F16Driver::begin(String _topic)
   BaseDriver::begin(_topic);
   setType(ACTUATOR_DRIVER_TYPE);
   setAvailable(available);
+
+  mLightBright = getProperty("mlightb", mLightBright);
+  nmLightBright = getProperty("nmlightb", nmLightBright);
+  mLightDark = getProperty("mlightd", mLightDark);
+  nmLightDark = getProperty("nmlightd", nmLightDark);
+  mTime = getProperty("mtime", mTime);
+  lightMode = getProperty("lightmode", lightMode);
+  beepMode = getProperty("beepmode", beepMode);
+  beepTime = getProperty("beeptime", beepTime);
   return true;
 }
 
@@ -195,19 +255,22 @@ bool F16Driver::query()
 
 String F16Driver::getAllProperties()
 {
-  volatile byte mLightBright = 0;
-  volatile byte nmLightBright = 0;
-  volatile byte mLightDark = 100;
-  volatile byte nmLightDark = 20;
-
   return BaseDriver::getAllProperties() +
-         "mlightb=" + String(mLightBright) + "//i\n"
-                                             "nmlightb=" +
-         String(nmLightBright) + "//i\n"
-                                 "mlightd=" +
-         String(mLightDark) + "//i\n"
-                              "nmlightd=" +
-         String(nmLightDark) + "//i\n";
+         "mlightb=" + getProperty("mlightb", mLightBright) + "//i\n"
+                                                             "nmlightb=" +
+         getProperty("nmlightb", nmLightBright) + "//i\n"
+                                                  "mlightd=" +
+         getProperty("mlightd", mLightDark) + "//i\n"
+                                              "nmlightd=" +
+         getProperty("nmlightd", nmLightDark) + "//i\n"
+                                                "mtime=" +
+         getProperty("mtime", mTime) + "//i\n"
+                                       "lightmode=" +
+         getProperty("lightmode", lightMode) + "//i\n"
+                                               "beepmode=" +
+         getProperty("beepmode", beepMode) + "//b\n"
+                                             "beeptime=" +
+         getProperty("beeptime", beepTime) + "//i\n";
 }
 
 bool F16Driver::publish()
@@ -224,53 +287,111 @@ String F16Driver::onMessage(String route, String _payload, int8_t transportMask)
   String result = BaseDriver::onMessage(route, _payload, transportMask);
 
   if (!result.equals(WRONG_PROPERTY_NAME))
-   return result;
-  
-    if (matchRoute(route, topic, "/getmlightb"))
-    {
-      result = String(mLightBright);
-    }
-    else if (matchRoute(route, topic, "/setmlightb"))
-    {
-      mLightBright = atoi(_payload.c_str());
-      result = "1";
-    }
-    else
-    if (matchRoute(route, topic, "/getnmlightb"))
-    {
-      result = String(nmLightBright);
-    }
-    else if (matchRoute(route, topic, "/setnmlightb"))
-    {
-      nmLightBright = atoi(_payload.c_str());
-      result = "1";
-    }
-    else
-    if (matchRoute(route, topic, "/getmlightd"))
-    {
-      result = String(mLightDark);
-    }
-    else if (matchRoute(route, topic, "/setmlightd"))
-    {
-      mLightDark = atoi(_payload.c_str());
-      result = "1";
-    }
-    else
-    if (matchRoute(route, topic, "/getnmlightd"))
-    {
-      result = String(nmLightDark);
-    }
-    else if (matchRoute(route, topic, "/setnmlightd"))
-    {
-      nmLightDark = atoi(_payload.c_str());
-      result = "1";
-    }
-    else
-    {
-      result = WRONG_PROPERTY_NAME;
-    }
-
     return result;
-  };
+
+  if (matchRoute(route, topic, "/getmlightb"))
+  {
+    result = String(getProperty("mlightb", mLightBright));
+  }
+  else if (matchRoute(route, topic, "/setmlightb"))
+  {
+    mLightBright = setProperty("mlightb", atoi(_payload.c_str()), true);
+    result = "1";
+  }
+  else if (matchRoute(route, topic, "/getnmlightb"))
+  {
+    result = String(getProperty("nmlightb", nmLightBright));
+  }
+  else if (matchRoute(route, topic, "/setnmlightb"))
+  {
+    nmLightBright = setProperty("nmlightb", atoi(_payload.c_str()), true);
+    result = "1";
+  }
+  else if (matchRoute(route, topic, "/getmlightd"))
+  {
+    result = String(getProperty("mlightd", mLightDark));
+  }
+  else if (matchRoute(route, topic, "/setmlightd"))
+  {
+    mLightDark = setProperty("mlightd", atoi(_payload.c_str()), true);
+    result = "1";
+  }
+  else if (matchRoute(route, topic, "/getnmlightd"))
+  {
+    result = String(getProperty("nmlightd", nmLightDark));
+  }
+  else if (matchRoute(route, topic, "/setnmlightd"))
+  {
+    nmLightDark = setProperty("nmlightd", atoi(_payload.c_str()), true);
+    result = "1";
+  }
+  else if (matchRoute(route, topic, "/getmtime"))
+  {
+    result = String(getProperty("mtime", mTime));
+  }
+  else if (matchRoute(route, topic, "/setmtime"))
+  {
+    mTime = setProperty("mtime", atoi(_payload.c_str()), true);
+    result = "1";
+  }
+  else if (matchRoute(route, topic, "/getlightmode"))
+  {
+    result = String(getProperty("lightmode", lightMode));
+  }
+  else if (matchRoute(route, topic, "/setlightmode"))
+  {
+    lightMode = setProperty("lightmode", atoi(_payload.c_str()), true);
+    result = "1";
+  }
+  else if (matchRoute(route, topic, "/getbeepmode"))
+  {
+    result = String(getProperty("beepmode", beepMode));
+  }
+  else if (matchRoute(route, topic, "/setbeepmode"))
+  {
+    beepMode = setProperty("beepmode", atoi(_payload.c_str()), true);
+    result = "1";
+  }
+  else if (matchRoute(route, topic, "/getbeeptime"))
+  {
+    result = String(getProperty("beeptime", beepTime));
+  }
+  else if (matchRoute(route, topic, "/setbeeptime"))
+  {
+    beepTime = setProperty("beeptime", atoi(_payload.c_str()), true);
+    result = "1";
+  }
+  else
+  {
+    result = WRONG_PROPERTY_NAME;
+  }
+
+  return result;
+};
+
+int F16Driver::getProperty(String name, int value)
+{
+  int result = value;
+  if (filesExists(id + "." + name))
+  {
+    result = filesReadInt(id + "." + name);
+  }
+  else
+  { // initial set data
+    setProperty(name, value, false);
+  }
+
+  return result;
+}
+
+int F16Driver::setProperty(String name, int value, bool doEvent)
+{
+  filesWriteInt(id + "." + name, value);
+  if (doEvent)
+  {
+    onInsideChange(name, String(value));
+  }
+  return value;
+};
 
 #endif

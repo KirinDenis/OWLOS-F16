@@ -78,7 +78,8 @@ public:
 	String onMessage(String route, String _payload, int8_t transportMask);
 
 private:
-
+	int getProperty(String name, int value);
+	int setProperty(String name, int value, bool doEvent);
 };
 #endif
 #endif
