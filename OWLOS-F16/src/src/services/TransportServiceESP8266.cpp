@@ -169,7 +169,7 @@ bool WiFiAccessPointReconnect()
 			return true;
 		String accessPointIP = nodeGetWiFiAccessPointIP(); //this API set Access Point IP from Unit Property OR set this Property as default IP OR return Utils.NaN
 		bool softAPResult = false;
-		softAPResult = WiFi.softAP(nodeGetWiFiAccessPointSSID(), nodeGetWiFiAccessPointPassword());
+		softAPResult = WiFi.softAP(nodeGetWiFiAccessPointSSID(), nodeGetWiFiAccessPointPassword(), 1);
 		if (softAPResult)
 		{
 			WiFiAccessPointConnected = true;

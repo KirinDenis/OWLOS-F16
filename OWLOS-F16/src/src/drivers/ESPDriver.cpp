@@ -884,7 +884,7 @@ bool nodeSetESPCpuFreqMHz(int _espcpufreqmhz)
 
 //ESPGetFlashChipId
 uint32_t nodeGetESPFlashChipId()
-{
+{	
 #ifdef ARDUINO_ESP8266_RELEASE_2_5_0
 	if (propertyFileReaded.indexOf("espflashchipid;") < 0)
 		return espflashchipid = ESP.getFlashChipId();

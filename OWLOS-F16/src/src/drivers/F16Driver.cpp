@@ -152,7 +152,7 @@ void IRAM_ATTR onTimerHandler()
 
   if (lightMode == LIGHT_MODE_OFF)
   {
-    analogWrite(D1, LIGHT_OFF_PWM);
+    analogWrite(D2, LIGHT_OFF_PWM);
   }
   else if (lightMode == LIGHT_MODE_AUTO || lightMode == LIGHT_MODE_AUTO_MOTION)
   {
@@ -176,18 +176,18 @@ void IRAM_ATTR onTimerHandler()
       if (currentLightPWM < PWM)
       {
         currentLightPWM += LIGHT_OFF_CHANGE_STEP_PWM;
-        analogWrite(D1, currentLightPWM);
+        analogWrite(D2, currentLightPWM);
       }
       else
       {
         currentLightPWM -= LIGHT_OFF_CHANGE_STEP_PWM;
-        analogWrite(D1, currentLightPWM);
+        analogWrite(D2, currentLightPWM);
       }
     }
   }
   else // LIGHT_MODE_ON and any others valies of lightMode - light is ON
   {
-    analogWrite(D1, LIGHT_ON_PWM);
+    analogWrite(D2, LIGHT_ON_PWM);
   }
 
   if (beepMode && lastMotionChange + beepTime * 1000 > millis())
@@ -220,7 +220,7 @@ bool F16Driver::init()
   analogWriteFreq(4000);           // 4000 Gz
   pinMode(D7, INPUT);
   pinMode(A0, INPUT);
-  pinMode(D1, OUTPUT);
+  pinMode(D2, OUTPUT);
   pinMode(D6, OUTPUT);
   digitalWrite(D6, LOW);
 
