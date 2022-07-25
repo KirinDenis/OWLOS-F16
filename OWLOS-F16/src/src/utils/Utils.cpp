@@ -51,24 +51,57 @@ char *stringToChar(String src)
 	return data;
 }
 
+String millisToDate(unsigned long _millis)
+{
+    _millis = _millis / 1000; //to seconds
+    int days = (_millis / (24 * 60 * 60));
+    _millis = _millis - days * (24 * 60 * 60);
+    byte hours = _millis / (60 * 60);
+    _millis = _millis - hours * (60 * 60);
+    byte minutes = _millis / 60;
+    byte seconds = _millis - minutes * 60;
+
+    String _hours = String(hours);
+    if (hours < 10)
+    {
+        _hours = "0" + _hours;
+    }
+
+    String _minutes = String(minutes);
+    if (minutes < 10)
+    {
+        _minutes = "0" + _minutes;
+    }
+
+    String _seconds = String(seconds);
+    if (seconds < 10)
+    {
+        _seconds = "0" + _seconds;
+    }
+
+    return String(days) + "d." + _hours + ":" + _minutes + ":" + _seconds;
+}
+
+
 #ifdef DEBUG
 void debugOut(const String &tag, const String &text)
 {
+	String boardStatus = "[" + millisToDate(millis()) + ":" + String(ESP.getFreeHeap()) + "] ";
 #ifdef USE_ESP_DRIVER
 	#ifdef SERIAL_COLORIZED_OUTPUT
-		String _text = text + " \033\033[1;32m [" + String(ESP.getFreeHeap()) + "]";
+		String _text = text + " \033\033[1;32m ";
 	#else
-		String _text = text + " [" + String(ESP.getFreeHeap()) + "]";
+		String _text = text;
 	#endif
 #else
     String _text = text;
 #endif
 
 #ifdef SERIAL_COLORIZED_OUTPUT
-	Serial.print("\033\033[1;35m DEBUG: \033\033[1;36m " + tag + " \033\033[1;34m " + _text + "\n");
+	Serial.print("\033\033[1;35m " + boardStatus + " \033\033[1;36m " + tag + " \033\033[1;34m " + _text + "\n");
 	Serial.print("\033\033[0m");
 #else
-	Serial.print("DEBUG: " + tag + " - " + _text + "\n");
+	Serial.print(boardStatus + " " + tag + " - " + _text + "\n");
 #endif
 
 	if (WRITE_DEBUG_LOG_FILES)

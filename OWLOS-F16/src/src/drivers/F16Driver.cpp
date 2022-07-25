@@ -20,36 +20,43 @@ with OWLOS. If not, see < https://www.gnu.org/licenses/>.
 
 GitHub: https://github.com/KirinDenis/owlos
 
-(Этот файл — часть Ready IoT Solution - OWLOS.
+(Цей файл — частина Ready IoT Solution — OWLOS.
 
-OWLOS - свободная программа: вы можете перераспространять ее и/или изменять
-ее на условиях Стандартной общественной лицензии GNU в том виде, в каком она
-была опубликована Фондом свободного программного обеспечения; версии 3
-лицензии, любой более поздней версии.
+OWLOS — безкоштовна програма, ви можете ділитися нею та/або змінювати її на
+умовах Стандартної суспільної ліцензії GNU в тому вигляді, в якому вона була
+опублікована Фондом вільного програмного забезпечення; версія 3 ліцензія,
+будь-яка старша версія.
 
-OWLOS распространяется в надежде, что она будет полезной, но БЕЗО ВСЯКИХ
-ГАРАНТИЙ; даже без неявной гарантии ТОВАРНОГО ВИДА или ПРИГОДНОСТИ ДЛЯ
-ОПРЕДЕЛЕННЫХ ЦЕЛЕЙ.
-Подробнее см.в Стандартной общественной лицензии GNU.
+OWLOS поширюється з надією, що вона буде корисною, але БЕЗ БУДЬ-ЯКИХ ГАРАНТІЙ;
+навіть без неявної гарантії ТОВАРНОГО ВИДУ чи ПРИДАТНОСТІ ДЛЯ ПЕВНИХ ЦІЛЕЙ.
+Див. детальніше у Стандартній громадській ліцензії GNU.
 
-Вы должны были получить копию Стандартной общественной лицензии GNU вместе с
-этой программой. Если это не так, см. <https://www.gnu.org/licenses/>.)
-
+Ви повинні отримати копію Стандартної суспільної ліцензії GNU разом із цією програмою.
+Якщо цього не сталося, див. <https://www.gnu.org/licenses/>.)
 -------------------------------------------------------------------------------------------------------------------------
 
-    _,.---._            ,-.-.             _,.---._      ,-,--.             _,---.                ,-----.--.      .,-.  
-  ,-.' , -  `. ,-..-.-./  \==\  _.-.    ,-.' , -  `.  ,-.'-  _\         .-`.' ,  \              /` ` - /==/     / \==\ 
- /==/_,  ,  - \|, \=/\=|- |==|.-,.'|   /==/_,  ,  - \/==/_ ,_.'        /==/_  _.-' ,--.--------.`-'-. -|==|    / -/==/ 
-|==|   .=.     |- |/ |/ , /==/==|, |  |==|   .=.     \==\  \          /==/-  '..-./==/,  -   , -\   | `|==|   /- /==/  
-|==|_ : ;=:  - |\, ,     _|==|==|- |  |==|_ : ;=:  - |\==\ -\         |==|_ ,    /\==\.-.  - ,-./   | -|==|  /  /==/   
-|==| , '='     || -  -  , |==|==|, |  |==| , '='     |_\==\ ,\        |==|   .--'  `--`--------`    | `|==| /. / \==\  
- \==\ -    ,_ /  \  ,  - /==/|==|- `-._\==\ -    ,_ //==/\/ _ |       |==|-  |                    .-','|==|| _ \_/\==\ 
-  '.='. -   .'   |-  /\ /==/ /==/ - , ,/'.='. -   .' \==\ - , /       /==/   \                   /     \==\\ . -  /==/ 
-    `--`--''     `--`  `--`  `--`-----'   `--`--''    `--`---'        `--`---'                   `-----`---`'----`--`  
+    _,.---._            ,-.-.             _,.---._      ,-,--.             _,---.                ,-----.--.      .,-.
+  ,-.' , -  `. ,-..-.-./  \==\  _.-.    ,-.' , -  `.  ,-.'-  _\         .-`.' ,  \              /` ` - /==/     / \==\
+ /==/_,  ,  - \|, \=/\=|- |==|.-,.'|   /==/_,  ,  - \/==/_ ,_.'        /==/_  _.-' ,--.--------.`-'-. -|==|    / -/==/
+|==|   .=.     |- |/ |/ , /==/==|, |  |==|   .=.     \==\  \          /==/-  '..-./==/,  -   , -\   | `|==|   /- /==/
+|==|_ : ;=:  - |\, ,     _|==|==|- |  |==|_ : ;=:  - |\==\ -\         |==|_ ,    /\==\.-.  - ,-./   | -|==|  /  /==/
+|==| , '='     || -  -  , |==|==|, |  |==| , '='     |_\==\ ,\        |==|   .--'  `--`--------`    | `|==| /. / \==\
+ \==\ -    ,_ /  \  ,  - /==/|==|- `-._\==\ -    ,_ //==/\/ _ |       |==|-  |                    .-','|==|| _ \_/\==\
+  '.='. -   .'   |-  /\ /==/ /==/ - , ,/'.='. -   .' \==\ - , /       /==/   \                   /     \==\\ . -  /==/
+    `--`--''     `--`  `--`  `--`-----'   `--`--''    `--`---'        `--`---'                   `-----`---`'----`--`
 
-              16th floor. IoT smart lamp driver with motion and light sensors. ESP8266 friendly.
+              16th floor. IoT smart light driver with supporting motion and light sensors. ESP8266 friendly.
 
--------------------------------------------------------------------------------------------------------------------------*/
+-------------------------------------------------------------------------------------------------------------------------
+Device configuration #1:
+
+[Motion Sensor 1 (D7)]  [Motion Sensor 2(D8)]  [Light Sensor (A0)]  [Beeper (D6)]
+ ^                       ^                      ^                    ^
+ |                       |                      |                    |
+[PWM 1 (D1)]-------------+----------------------+---------------------
+                         |                      |
+                        [PWM 2 (D2)] ------------
+*/
 
 #include "F16Driver.h"
 #ifdef USE_F16_DRIVER
@@ -60,9 +67,12 @@ OWLOS распространяется в надежде, что она буде
 #include <FunctionalInterrupt.h>
 #include <Ticker.h>
 
-void IRAM_ATTR onMotionDetectHandler();
-
-volatile int prevM = -1;
+#define PWM_1_PIN D1
+#define PWM_2_PIN D2
+#define MOTION_SENSOR_1_PIN D7
+#define MOTION_SENSOR_2_PIN D8
+#define LIGHT_SENSOR_PIN A0
+#define BEEPER_PIN D6
 
 #define LIGHT_OFF_PWM 1024
 #define LIGHT_ON_PWM 0
@@ -74,24 +84,23 @@ volatile int prevM = -1;
 #define LIGHT_SENSOR_DARK 1024
 #define LIGHT_SENSOR_RANGE (LIGHT_SENSOR_DARK - LIGHT_SENSOR_BRIGHT)
 
-#define ANTI_LIGHT_BOUNCE 100
-
-// https://github.com/khoih-prog/ESP8266TimerInterrupt/blob/master/src/ESP8266TimerInterrupt.h
-#define TIM_DIV1_CLOCK (80000000UL) // 80000000 / 1   = 80.0  MHz
-#define TIM_DIV16_CLOCK (5000000UL) // 80000000 / 16  = 5.0   MHz
-#define TIM_DIV256_CLOCK (312500UL) // 80000000 / 256 = 312.5 KHz
+#define LIGHT_MODE_OFF 0
+#define LIGHT_MODE_ON 1
+#define LIGHT_MODE_AUTO 2
+#define LIGHT_MODE_AUTO_MOTION 3
 
 #define MOTION_INTERVAL 5
+#define TIKER_INTERVAL 0.01
 
-volatile int currentLightPWM = LIGHT_ON_PWM;
-volatile int lightPWMHistory[4];
-volatile int pwm = 0;
-volatile int lastLightSensor = 0;
-volatile int lightBalance = 0;
+void IRAM_ATTR onMotion1DetectHandler();
+void IRAM_ATTR onMotion2DetectHandler();
 
-volatile unsigned long lastMotionChange = 0;
+volatile unsigned long lastMotion1Change = 0;
+volatile unsigned long lastMotion2Change = 0;
 
-//-------------------
+volatile uint16_t current1LightPWM = LIGHT_ON_PWM;
+volatile uint16_t current2LightPWM = LIGHT_ON_PWM;
+
 volatile uint8 mLightBright = 0;
 volatile uint8 nmLightBright = 0;
 volatile uint8 mLightDark = 100;
@@ -99,12 +108,8 @@ volatile uint8 nmLightDark = 20;
 
 volatile uint16 mTime = MOTION_INTERVAL;
 
-#define LIGHT_MODE_OFF 0
-#define LIGHT_MODE_ON 1
-#define LIGHT_MODE_AUTO 2
-#define LIGHT_MODE_AUTO_MOTION 3
-
-volatile uint8 lightMode = LIGHT_MODE_AUTO_MOTION;
+volatile uint8 light1Mode = LIGHT_MODE_AUTO_MOTION;
+volatile uint8 light2Mode = LIGHT_MODE_AUTO_MOTION;
 
 volatile bool beepMode = 1; // 1 enabled, 0 disabled
 volatile uint8 beepTime = 4;
@@ -117,9 +122,13 @@ Ticker ticker;
 // LIGHT_OFF_PWM = 0%  (default value 1024)
 uint16_t PercentToPWM(uint8_t percent)
 {
-  if (percent > 100)
+  if (percent <= 0)
   {
-    percent = 100;
+    return LIGHT_OFF_PWM;
+  }
+  else if (percent >= 100)
+  {
+    return LIGHT_ON_PWM;
   }
   return LIGHT_OFF_PWM - ((float)LIGHT_OFF_PWM / 100.0f * (float)percent);
 }
@@ -138,26 +147,37 @@ uint8_t LStoPercent(uint16_t value)
   {
     value = LIGHT_SENSOR_BRIGHT;
   }
-  return 100 - ((value - (float)LIGHT_SENSOR_BRIGHT) / ((float)LIGHT_SENSOR_RANGE / 100.0f));
+  return 100.0f - ((value - (float)LIGHT_SENSOR_BRIGHT) / ((float)LIGHT_SENSOR_RANGE / 100.0f));
 }
 
-void IRAM_ATTR onMotionDetectHandler()
+//-------------------------------------------------------------------------------------------------------
+// Motion sensor 1 interupt handler
+void IRAM_ATTR onMotion1DetectHandler()
 {
-  lastMotionChange = millis();
+  lastMotion1Change = millis();    
+  debugOut("motion 1", "detect");
 }
 
-void IRAM_ATTR onTimerHandler()
+//-------------------------------------------------------------------------------------------------------
+// Motion sensor 2 interupt handler
+void IRAM_ATTR onMotion2DetectHandler()
 {
-  noInterrupts();
+  lastMotion2Change = millis();  
+  debugOut("motion 2", "detect");
+}
 
+//-------------------------------------------------------------------------------------------------------
+// Set PWM
+uint16_t setPWM(uint8 lightMode, uint8_t PWMPin, unsigned long lastMotionChange, uint16_t currentLightPWM)
+{
   if (lightMode == LIGHT_MODE_OFF)
   {
-    analogWrite(D2, LIGHT_OFF_PWM);
+    analogWrite(PWMPin, LIGHT_OFF_PWM);
   }
   else if (lightMode == LIGHT_MODE_AUTO || lightMode == LIGHT_MODE_AUTO_MOTION)
   {
 
-    uint8_t LSPercent = LStoPercent(analogRead(A0)) / 10 * 10; // 10% sensor bounce
+    uint8_t LSPercent = LStoPercent(analogRead(LIGHT_SENSOR_PIN)) / 10 * 10; // 10% sensor bounce
 
     // if motion detected
     uint16_t PWM;
@@ -176,40 +196,52 @@ void IRAM_ATTR onTimerHandler()
       if (currentLightPWM < PWM)
       {
         currentLightPWM += LIGHT_OFF_CHANGE_STEP_PWM;
-        analogWrite(D2, currentLightPWM);
+        analogWrite(PWMPin, currentLightPWM);
       }
       else
       {
         currentLightPWM -= LIGHT_OFF_CHANGE_STEP_PWM;
-        analogWrite(D2, currentLightPWM);
+        analogWrite(PWMPin, currentLightPWM);
       }
     }
   }
   else // LIGHT_MODE_ON and any others valies of lightMode - light is ON
   {
-    analogWrite(D2, LIGHT_ON_PWM);
+    analogWrite(PWMPin, LIGHT_ON_PWM);
   }
+  return currentLightPWM;
+}
+//-------------------------------------------------------------------------------------------------------
+// Timer interupt handler
+void IRAM_ATTR onTimerHandler()
+{
+  noInterrupts();
 
-  if (beepMode && lastMotionChange + beepTime * 1000 > millis())
+  current1LightPWM = setPWM(light1Mode, PWM_1_PIN, lastMotion1Change, current1LightPWM);
+  current2LightPWM = setPWM(light2Mode, PWM_2_PIN, lastMotion2Change, current2LightPWM);
+
+  if (beepMode && lastMotion1Change + beepTime * 1000 > millis())
   {
     beep = !beep;
     if (beep)
-    {
-      digitalWrite(D6, HIGH);
+    {      
+      digitalWrite(BEEPER_PIN, HIGH);
     }
     else
     {
-      digitalWrite(D6, LOW);
+      digitalWrite(BEEPER_PIN, LOW);
     }
   }
   else
   {
-    digitalWrite(D6, LOW);
+    digitalWrite(BEEPER_PIN, LOW);
   }
 
   interrupts();
 }
 
+//-------------------------------------------------------------------------------------------------------
+// OWLOS driver initialize
 bool F16Driver::init()
 {
   if (id.length() == 0)
@@ -218,19 +250,27 @@ bool F16Driver::init()
 
   analogWriteRange(LIGHT_OFF_PWM); // Range from 0 to 1000
   analogWriteFreq(4000);           // 4000 Gz
-  pinMode(D7, INPUT);
-  pinMode(A0, INPUT);
-  pinMode(D2, OUTPUT);
-  pinMode(D6, OUTPUT);
-  digitalWrite(D6, LOW);
 
-  attachInterrupt(digitalPinToInterrupt(D7), onMotionDetectHandler, CHANGE);
+  pinMode(PWM_1_PIN, OUTPUT);
+  pinMode(PWM_2_PIN, OUTPUT);
 
-  ticker.attach(0.01, onTimerHandler);
+  pinMode(MOTION_SENSOR_1_PIN, INPUT);
+  pinMode(MOTION_SENSOR_2_PIN, INPUT);
+  pinMode(LIGHT_SENSOR_PIN, INPUT);
+
+  pinMode(BEEPER_PIN, OUTPUT);
+  digitalWrite(BEEPER_PIN, LOW);
+
+  attachInterrupt(digitalPinToInterrupt(MOTION_SENSOR_1_PIN), onMotion1DetectHandler, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(MOTION_SENSOR_2_PIN), onMotion2DetectHandler, CHANGE);
+
+  ticker.attach(TIKER_INTERVAL, onTimerHandler);
 
   return true;
 }
 
+//-------------------------------------------------------------------------------------------------------
+// OWLOS driver begin
 bool F16Driver::begin(String _topic)
 {
   BaseDriver::begin(_topic);
@@ -242,12 +282,15 @@ bool F16Driver::begin(String _topic)
   mLightDark = getProperty("mlightd", mLightDark);
   nmLightDark = getProperty("nmlightd", nmLightDark);
   mTime = getProperty("mtime", mTime);
-  lightMode = getProperty("lightmode", lightMode);
+  light1Mode = getProperty("light1mode", light1Mode);
+  light2Mode = getProperty("light2mode", light2Mode);
   beepMode = getProperty("beepmode", beepMode);
   beepTime = getProperty("beeptime", beepTime);
   return true;
 }
 
+//-------------------------------------------------------------------------------------------------------
+// OWLOS driver query
 bool F16Driver::query()
 {
   return false;
@@ -265,9 +308,11 @@ String F16Driver::getAllProperties()
          getProperty("nmlightd", nmLightDark) + "//i\n"
                                                 "mtime=" +
          getProperty("mtime", mTime) + "//i\n"
-                                       "lightmode=" +
-         getProperty("lightmode", lightMode) + "//i\n"
-                                               "beepmode=" +
+                                       "light1mode=" +
+         getProperty("light1mode", light1Mode) + "//i\n"
+                                                 "light2mode=" +
+         getProperty("light2mode", light2Mode) + "//i\n"
+                                                 "beepmode=" +
          getProperty("beepmode", beepMode) + "//b\n"
                                              "beeptime=" +
          getProperty("beeptime", beepTime) + "//i\n";
@@ -334,13 +379,22 @@ String F16Driver::onMessage(String route, String _payload, int8_t transportMask)
     mTime = setProperty("mtime", atoi(_payload.c_str()), true);
     result = "1";
   }
-  else if (matchRoute(route, topic, "/getlightmode"))
+  else if (matchRoute(route, topic, "/getlight1mode"))
   {
-    result = String(getProperty("lightmode", lightMode));
+    result = String(getProperty("light1mode", light1Mode));
   }
-  else if (matchRoute(route, topic, "/setlightmode"))
+  else if (matchRoute(route, topic, "/setlight1mode"))
   {
-    lightMode = setProperty("lightmode", atoi(_payload.c_str()), true);
+    light1Mode = setProperty("light1mode", atoi(_payload.c_str()), true);
+    result = "1";
+  }
+  else if (matchRoute(route, topic, "/getlight2mode"))
+  {
+    result = String(getProperty("light2mode", light2Mode));
+  }
+  else if (matchRoute(route, topic, "/setlight2mode"))
+  {
+    light2Mode = setProperty("light2mode", atoi(_payload.c_str()), true);
     result = "1";
   }
   else if (matchRoute(route, topic, "/getbeepmode"))
