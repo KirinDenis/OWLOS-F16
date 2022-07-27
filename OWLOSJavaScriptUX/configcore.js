@@ -252,10 +252,10 @@ var config = {
                             },
                             thingRefresh(thing) {
                                 drivers.refresh(thing);
-                                pins.refresh(thing);
-                                driverPins.refresh(thing);
-                                accessableDrivers.refresh(thing);
-                                scriptsService.refresh(thing);
+                                //pins.refresh(thing);
+                                //driverPins.refresh(thing);
+                                //accessableDrivers.refresh(thing);
+                                //scriptsService.refresh(thing);
                             }
 
                         }
