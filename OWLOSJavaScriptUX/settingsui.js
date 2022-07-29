@@ -398,7 +398,7 @@ var settingsUI = {
 
 				
                             mlightbdriverProp = driver["mlightb"];
-                            widgetLayer = WidgetsLayer["RadialWidget"];
+                            widgetLayer = WidgetsLayer["F16Widget"];
                             new widgetLayer.widget(driversWidgetsPanel, driver, mlightbdriverProp).onload = function (widgetWrapper) {
 
                                 config.addWidget("main", driver._id, mlightbdriverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
@@ -407,7 +407,7 @@ var settingsUI = {
                             }
 
                             nmlightbdriverProp = driver["nmlightb"];
-                            widgetLayer = WidgetsLayer["RadialWidget"];
+                            widgetLayer = WidgetsLayer["F16Widget"];
                             new widgetLayer.widget(driversWidgetsPanel, driver, nmlightbdriverProp).onload = function (widgetWrapper) {
 
                                 config.addWidget("main", driver._id, nmlightbdriverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);

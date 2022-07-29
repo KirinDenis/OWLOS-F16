@@ -184,9 +184,9 @@ function loadingScripts(withInternet) {
                             loadingScript("dialogprogressbarelement.js");
 
                             var baseWidgetScript = document.createElement('script');
-                            baseWidgetScript.onload = function () {
-                                //  loadingScript("basewidget.js");
+                            baseWidgetScript.onload = function () {                                
                                 loadingScript("radialwidget.js");
+                                loadingScript("f16widget.js");
                                 loadingScript("actuatorwidget.js");
                                 loadingScript("lcdwidget.js");
                                 loadingScript("stepperwidget.js");

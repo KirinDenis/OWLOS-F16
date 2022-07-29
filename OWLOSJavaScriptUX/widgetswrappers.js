@@ -184,7 +184,7 @@ var BaseWidgetWrapper =
         return BaseWidgetWrapper;
     }();
 
-
+//-----------------------------------------------------------------------------------------------------------------------
 var RadialWidgetWrapper =
 
     function (_BaseWidgetWrapper) {
@@ -229,6 +229,49 @@ var RadialWidgetWrapper =
 
 //-----------------------------------------------------------------------------------------------------------------------
 
+var F16WidgetWrapper =
+
+    function (_BaseWidgetWrapper) {
+        "use strict";
+
+        _inheritsLoose(F16WidgetWrapper, _BaseWidgetWrapper);
+
+        var _proto2 = F16WidgetWrapper.prototype;
+
+        _proto2.offlineStarter = function offlineStarter(parentPanel, driverId, driverPropertyName) {
+            _BaseWidgetWrapper.prototype.offlineStarter.call(this, parentPanel, driverId, driverPropertyName, true);
+
+            this.widget = new F16Widget(parentPanel, this.makeUniqueId(driverId), configProperties.widgetssize);
+            this.widget.driverClass = this;
+            this.widget.onload = this.onWidgetLoad;
+        };
+
+        function F16WidgetWrapper(parentPanel, driver, driverProperty, configPropertiesWidget, widgetProperties) {
+            var _this;
+
+            _this = _BaseWidgetWrapper.call(this, parentPanel, driver, driverProperty, true, configPropertiesWidget, widgetProperties) || this;
+            if (driver == undefined) return _assertThisInitialized(_this);
+            return _this;
+        }
+
+        _proto2.draw = function draw() {
+            if (this.widget == undefined) return;
+            if (this.driverProperty == undefined) return;
+
+            if (this.driverProperty.networkStatus == NET_ONLINE) {
+                this.widget.refresh(this.driverProperty.value, this.driverProperty.value, this.driver._id);
+            } else {
+                this.widget.refresh(0, "--", this.driver._id);
+            }
+
+            this.widget.networkStatus = this.driverProperty.networkStatus;
+            return true;
+        };
+
+        return F16WidgetWrapper;
+    }(BaseWidgetWrapper);
+
+//-----------------------------------------------------------------------------------------------------------------------
 
 var TemperatureWidgetWrapper =
 
@@ -1053,6 +1096,13 @@ var WidgetsLayer = {
         id: "radialwidget",
         name: getLang("radial"),
         widget: RadialWidgetWrapper,
+        driversTypes: "any",
+        driversProperties: "any"
+    },
+    F16Widget: {
+        id: "f16widget",
+        name: getLang("f16"),
+        widget: F16WidgetWrapper,
         driversTypes: "any",
         driversProperties: "any"
     },
