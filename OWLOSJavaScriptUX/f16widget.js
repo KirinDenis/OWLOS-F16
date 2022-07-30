@@ -57,22 +57,57 @@ var F16Widget =
 
             widget.widgetHolder.className = "col-6 col-sm-4 col-lg-2 widgetHolder";
 
-            
-            /*
-            widget.topMargin = widget.size / 20; //this.panding = 5;
-            widget.width = widget.size * 2;
-            widget.height = widget.size * 2;
-            widget.centreX = widget.width / 2; //  this.centreY = this.height / 2;
-            widget.widgetTextSize = widget.size / 110;
-            widget.graphWidth = widget.width - widget.panding;
-            widget.graphHeight = widget.height - widget.size / 3.4;
-            widget.graphTop = widget.size / 3.7;
-            widget.SVGViewBox.setAttributeNS(null, "viewBox", "0 0 " + widget.width + " " + widget.height);
-            widget.SVGBackgroundPanel.drawRoundedRect(widget.width - 5, widget.height - 6, 5, 10, true, true, true, true);
-            widget.SVGBackdownpanel.drawRoundedRect(widget.width - 5, 10, 5, 0, false, false, true, true);
-            widget.SVGHeaderPanel.drawRoundedRect(widget.width, 26, 5, 0, true, true, false, false);
-            */
+            //animate
+            widget.animated = true;
+            widget.levelRectWidth = widget.size / 15;
+            widget.levelRectHeight = widget.size / 100;
+            widget.levelLeft = widget.width - widget.levelRectWidth + widget.halfPanding;
+            widget.levelTop = (widget.height - widget.levelRectHeight * 60 / 2) / 3;
+            widget.level1 = [];
+            widget.level2 = [];
 
+
+
+            widget.levelArc = [];
+
+            for (var i = 1; i < 5; i++) {
+                var SVGlevelArc = new SVGArc(widget.SVGViewBox, widget.id + "arcback1" + i, widget.centreX, widget.levelTop, i * widget.radius, widget.size / 34);
+                SVGlevelArc.index = i;
+                SVGlevelArc.fill = theme.info;
+
+                widget.levelArc.push(SVGlevelArc);
+            }
+
+
+            widget.radar1 = [];
+            widget.radar2 = [];
+            widget.radar3 = [];
+            widget.radar4 = [];
+
+            for (var i = 1; i < 5; i++) {
+                var SVGRadarArc1 = new SVGArc(widget.SVGViewBox, widget.id + "arcback1" + i, widget.centreX, widget.topMargin, i * widget.radius, widget.size / 104);
+                var SVGRadarArc2 = new SVGArc(widget.SVGViewBox, widget.id + "arcback2" + i, widget.centreX, widget.topMargin, i * widget.radius, widget.size / 94);
+                var SVGRadarArc3 = new SVGArc(widget.SVGViewBox, widget.id + "arcback3" + i, widget.centreX, widget.topMargin, i * widget.radius, widget.size / 84);
+                var SVGRadarArc4 = new SVGArc(widget.SVGViewBox, widget.id + "arcback4" + i, widget.centreX, widget.topMargin, i * widget.radius, widget.size / 74);
+                SVGRadarArc1.index = SVGRadarArc2.index = SVGRadarArc3.index = SVGRadarArc4.index = i;
+                SVGRadarArc1.color = SVGRadarArc2.color = SVGRadarArc3.color = SVGRadarArc4.color = theme.warning;
+                widget.radar1.push(SVGRadarArc1);
+                widget.radar2.push(SVGRadarArc2);
+                widget.radar3.push(SVGRadarArc3);
+                widget.radar4.push(SVGRadarArc4);
+            }
+
+            requestAnimationFrame(function () {
+                return widget.animate();
+            });
+
+            //Light power slider
+
+            widget.SVGPlusSlider = new SVGIcon(widget.SVGViewBox, plusIcon, 10, 25, 20, 20);
+            widget.SVGMinusSlider = new SVGIcon(widget.SVGViewBox, minusIcon, 10, 80, 20, 20);
+
+
+            //--- animate
             widget._properties.linewidth =
             {
                 tab: "G",
@@ -121,11 +156,6 @@ var F16Widget =
                 value: theme.success,
                 type: "c"
             };
-
-            
-            
-            //widget.SVGArcBack = new SVGArc(widget.SVGViewBox, widget.id + "arcback", widget.centreX, widget.topMargin, widget.radius, widget._properties.linewidth);
-            //widget.SVGArcWidget = new SVGArc(widget.SVGViewBox, widget.id + "arcwidget", widget.centreX, widget.topMargin, widget.radius, widget._properties.linewidth);
             
             widget.clickableToTop();
             widget.proprties = widget._properties;
@@ -148,7 +178,7 @@ var F16Widget =
             this.width = this.size;
             this.height = this.size;
             this.centreX = this.width / 2; //  this.centreY = this.height / 2;
-            this.widgetTextSize = this.size / 110;
+            this.widgetTextSize = this.size / 210;
             this.graphWidth = this.width - this.panding;
             this.graphHeight = this.height - this.size / 3.4;
             this.graphTop = this.size / 3.7;
@@ -169,6 +199,16 @@ var F16Widget =
             this.SVGArcBack = new SVGArc(this.SVGViewBox, this.id + "arcback", this.centreX, this.topMargin, this.radius, this._properties.linewidth);
             this.SVGArcWidget = new SVGArc(this.SVGViewBox, this.id + "arcwidget", this.centreX, this.topMargin, this.radius, this._properties.linewidth);
 
+            this.SVGWidgetText.size = this.size / 160;
+            this.SVGWidgetText.text = "Auto";
+            this.SVGHeaderText.size = this.size / 260;
+            
+
+            if (this.SVGLightPowerSlider) {
+             //   this.SVGLightPowerSlider.drawRoundedRect(this.width / 20, this.height / 3, 20, 20, true, true, false, false);
+                
+            }
+
         }
 
         F16Widget.prototype.resize = function resize(size) {
@@ -176,6 +216,48 @@ var F16Widget =
             this._resize(size);
 
         };
+
+        F16Widget.prototype.animate = function animate() {
+            var baseWidget2 = this;
+
+            if (this.animated) {
+                //animate motion
+                for (var i = 0; i < 4; i++) {
+                    this.levelArc[i].radius += 1.4;
+                    this.levelArc[i].opacity -= 0.01;
+
+                    if (this.levelArc[i].radius > this.radius * 10) {
+                        this.levelArc[i].radius = this.radius;
+                        this.levelArc[i].opacity = 0.6;
+                    }
+
+                    this.levelArc[i].draw(90 + 60, 270 - 60);
+                
+                //animate light intensive 
+                
+                    this.radar1[i].radius += 0.5;
+                    this.radar1[i].opacity -= 0.01;
+
+                    if (this.radar1[i].radius > this.radius * 2) {
+                        this.radar1[i].radius = this.radius / 2;
+                        this.radar1[i].opacity = 0.7;
+                    }
+
+                    this.radar1[i].draw(270 + 15, 350 - 15);
+                    this.radar2[i].radius = this.radar3[i].radius = this.radar4[i].radius = this.radar1[i].radius;
+                    this.radar2[i].opacity = this.radar3[i].opacity = this.radar4[i].opacity = this.radar1[i].opacity;
+                    this.radar2[i].draw(15, 90 - 15);
+                    this.radar3[i].draw(90 + 16, 180 - 15);
+                    this.radar4[i].draw(180 + 15, 270 - 15);
+                }
+
+
+                requestAnimationFrame(function () {
+                    return baseWidget2.animate();
+                });
+            }
+        };
+
 
         F16Widget.prototype.drawWidget = function drawWidget() {
             _BaseWidget.prototype.drawWidget.call(this);
@@ -188,7 +270,7 @@ var F16Widget =
                 _data = this.data / (range / 100);
             }
             else {
-                //TODO Error Write Ситуация когда проценты
+                
                 if ((_data > 100) || (_data < 0)) {
                     this.toColor(this.SVGArcWidget, theme.warning);
                 }
@@ -207,9 +289,17 @@ var F16Widget =
 
             this.SVGArcWidget.draw(240, 240 + drawPercent);
 
+            this.SVGPlusSlider.opacity = 1.0;
+            this.SVGPlusSlider.fill = theme.info;
+
+            this.SVGMinusSlider.opacity = 1.0;
+            this.SVGMinusSlider.fill = theme.info;
+
+
+
             switch (this._networkStatus) {
                 case NET_ONLINE:
-                    this.toColor(this.SVGArcWidget, this._properties.percentcolor.value);
+                    this.toColor(this.SVGArcWidget, theme.warning);
                     break;
 
                 case NET_ERROR:

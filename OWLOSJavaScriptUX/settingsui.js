@@ -402,7 +402,7 @@ var settingsUI = {
                             new widgetLayer.widget(driversWidgetsPanel, driver, mlightbdriverProp).onload = function (widgetWrapper) {
 
                                 config.addWidget("main", driver._id, mlightbdriverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "Motion bright";
+                                widgetWrapper.widget.properties.headertext.value = "Lamp 1";
                                 widgetWrapper.widget.drawText();
                             }
 
@@ -411,7 +411,7 @@ var settingsUI = {
                             new widgetLayer.widget(driversWidgetsPanel, driver, nmlightbdriverProp).onload = function (widgetWrapper) {
 
                                 config.addWidget("main", driver._id, nmlightbdriverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "No motion bright";
+                                widgetWrapper.widget.properties.headertext.value = "Lamp 2";
                                 widgetWrapper.widget.drawText();
                             }
 
