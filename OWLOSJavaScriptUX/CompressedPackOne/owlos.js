@@ -2929,6 +2929,7 @@ var BaseWidget =
             // создаем эквалайзер 
             // состоит из множества элементов, каждый элемент находится в своем массиве (столбце), каждый такой массив в массиве столбцов
             // 30 столбцов по 5 элементов в каждом (150 элементов в эквалайзере)
+            /*
             widget.eCount = 30; // эквалайзер из 30 секций
             widget.eWidth = widget.size / (widget.eCount + 50); // ширина эквалайзера
             widget.eRWidth = widget.width / 40; // ширина одного элемента
@@ -2950,6 +2951,7 @@ var BaseWidget =
                 // помещаем столбец с элементами в массив столбцов эквалайзера 
                 widget.equalizerX.push(equalizerY);
             }
+            */
             // кнопки управления виджетом - отображаются в режиме "Редактирования виджета" (сдвиг влево, сдвиг вправо, удаление, настройка свойств виджета)
             // кнопки реализованы на основе SVGImage (Icons)
             widget.rowSize = widget.size / 6; // относительный размер одной кнопки 
@@ -3580,11 +3582,13 @@ var BaseWidget =
 
             if (this._data == data && this.widgetText == widgetText && this._properties.headertext == label) return;
 
-            if (this._properties.headertext.value === '---') {
-                this._properties.headertext.value = label;
-            }
-            if (this.widgetText != widgetText) {
-                speak(this._properties.headertext + " " + widgetText);
+            if (this._properties != undefined) {
+                if (this._properties.headertext.value === '---') {
+                    this._properties.headertext.value = label;
+                }
+                if (this.widgetText != widgetText) {
+                    speak(this._properties.headertext + " " + widgetText);
+                }
             }
             this.historyData = historyData;
             this._data = data;
@@ -5192,220 +5196,51 @@ var settingsUI = {
                         var driversWidgetsPanel = document.getElementById("driversWidgetsPanel");
                         var driverProp;
                         var widgetLayer;
-                        if (driver._id === "dht22") {
+                        if (driver._id === "f16") {
 
-                            driverProp = driver["temperature"];
-                            widgetLayer = WidgetsLayer["TemperatureWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "DHT22 Temperature";
-                                widgetWrapper.widget.drawText();
-                                //block edit-delete    
-                                //widgetWrapper.widget.onchange = config.onWidgetChange;
-                                //widgetWrapper.widget.ondelete = config.onWidgetDelete;
-                            }
+				
+                            mlightbdriverProp = driver["mlightb"];
+                            widgetLayer = WidgetsLayer["F16Widget"];
+                            new widgetLayer.widget(driversWidgetsPanel, driver, mlightbdriverProp).onload = function (widgetWrapper) {
 
-                            driverProp = driver["temperaturehistorydata"];
-                            widgetLayer = WidgetsLayer["HistoryDataGraphWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "DHT22 Temperature";
+                                config.addWidget("main", driver._id, mlightbdriverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
+                                widgetWrapper.widget.properties.headertext.value = "Lamp 1";
                                 widgetWrapper.widget.drawText();
                             }
 
-                            driverProp = driver["humidity"];
+                            nmlightbdriverProp = driver["nmlightb"];
+                            widgetLayer = WidgetsLayer["F16Widget"];
+                            new widgetLayer.widget(driversWidgetsPanel, driver, nmlightbdriverProp).onload = function (widgetWrapper) {
+
+                                config.addWidget("main", driver._id, nmlightbdriverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
+                                widgetWrapper.widget.properties.headertext.value = "Lamp 2";
+                                widgetWrapper.widget.drawText();
+                            }
+
+
+                            mlightddriverProp = driver["mlightd"];
                             widgetLayer = WidgetsLayer["RadialWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
+                            new widgetLayer.widget(driversWidgetsPanel, driver, mlightddriverProp).onload = function (widgetWrapper) {
 
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "DHT22 Humidity";
+                                config.addWidget("main", driver._id, mlightddriverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
+                                widgetWrapper.widget.properties.headertext.value = "Motion dark";
                                 widgetWrapper.widget.drawText();
                             }
 
-                            driverProp = driver["humidityhistorydata"];
-                            widgetLayer = WidgetsLayer["HistoryDataGraphWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "DHT22 Humidity";
-                                widgetWrapper.widget.drawText();
-                            }
-
-
-                            driverProp = driver["heatindex"];
+                            nmlightddriverProp = driver["nmlightd"];
                             widgetLayer = WidgetsLayer["RadialWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
+                            new widgetLayer.widget(driversWidgetsPanel, driver, nmlightddriverProp).onload = function (widgetWrapper) {
 
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "DHT22 HeatIndex";
+                                config.addWidget("main", driver._id, nmlightddriverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
+                                widgetWrapper.widget.properties.headertext.value = "No motion dark";
                                 widgetWrapper.widget.drawText();
                             }
 
-                            driverProp = driver["heatindexhistorydata"];
-                            widgetLayer = WidgetsLayer["HistoryDataGraphWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "DHT22 HeatIndex";
-                                widgetWrapper.widget.drawText();
-                            }
-                        }
-                        if (driver._id === "bmp280") 
-                        {
-                            driverProp = driver["pressure"];
-                            widgetLayer = WidgetsLayer["ValueWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "BMP280 pressure(Pa)";
-                                widgetWrapper.widget.drawText();
-                            }
-
-                            driverProp = driver["pressurehistorydata"];
-                            widgetLayer = WidgetsLayer["HistoryDataGraphWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "BMP280 pressure(Pa)";
-                                widgetWrapper.widget.drawText();
-                            }
-
-                            driverProp = driver["altitude"];
-                            widgetLayer = WidgetsLayer["ValueWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "BMP280 altitude(m)";
-                                widgetWrapper.widget.drawText();
-                            }
-
-                            driverProp = driver["altitudehistorydata"];
-                            widgetLayer = WidgetsLayer["HistoryDataGraphWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "BMP280 altitude(m)";
-                                widgetWrapper.widget.drawText();
-                            }
-
-                            driverProp = driver["temperature"];
-                            widgetLayer = WidgetsLayer["TemperatureWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "BMP280 Temperature";
-                                widgetWrapper.widget.drawText();
-                            }
-
-                            driverProp = driver["temperaturehistorydata"];
-                            widgetLayer = WidgetsLayer["HistoryDataGraphWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "BMP280 Temperature";
-                                widgetWrapper.widget.drawText();
-                            }
-                        }
-
-                        if (driver._id === "ads1x15") {
-
-                            driverProp = driver["chanel_3"];
-                            widgetLayer = WidgetsLayer["LightWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "Light";
-                                widgetWrapper.widget.drawText();
-                            }
-
-                            driverProp = driver["chanel_3_historydata"];
-                            widgetLayer = WidgetsLayer["HistoryDataGraphWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "Light";
-                                widgetWrapper.widget.drawText();
-                            }
-                            
-                            driverProp = driver["chanel_2"];
-                            widgetLayer = WidgetsLayer["SmokeWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "MQ 7";
-                                widgetWrapper.widget.drawText();
-                            }
-
-                            driverProp = driver["chanel_2_historydata"];
-                            widgetLayer = WidgetsLayer["HistoryDataGraphWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "MQ 7 Carbon Monoxide";
-                                widgetWrapper.widget.drawText();
-                            }
-
-                            driverProp = driver["chanel_1"];
-                            widgetLayer = WidgetsLayer["SmokeWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "MQ 135";
-                                widgetWrapper.widget.drawText();
-                            }
-
-                            driverProp = driver["chanel_1_historydata"];
-                            widgetLayer = WidgetsLayer["HistoryDataGraphWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "MQ 135 Gas";
-                                widgetWrapper.widget.drawText();
-                            }
-                        }
-
-                        if (driver._id === "ccs811") {
-
-                            driverProp = driver["co2"];
-                            widgetLayer = WidgetsLayer["ValueWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "CO2";
-                                widgetWrapper.widget.drawText();
-                            }
-
-                            driverProp = driver["co2historydata"];
-                            widgetLayer = WidgetsLayer["HistoryDataGraphWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "CO2";
-                                widgetWrapper.widget.drawText();
-                            }
-
-                            driverProp = driver["tvoc"];
-                            widgetLayer = WidgetsLayer["RadialWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "TVOC";
-                                widgetWrapper.widget.drawText();
-                            }
-
-                            driverProp = driver["tvochistorydata"];
-                            widgetLayer = WidgetsLayer["HistoryDataGraphWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "TVOC";
-                                widgetWrapper.widget.drawText();
-                            }
-
-                            driverProp = driver["resistence"];
-                            widgetLayer = WidgetsLayer["ValueWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "Resistence";
-                                widgetWrapper.widget.drawText();
-                            }
-
-                            driverProp = driver["resistencehistorydata"];
-                            widgetLayer = WidgetsLayer["HistoryDataGraphWidget"];
-                            new widgetLayer.widget(driversWidgetsPanel, driver, driverProp).onload = function (widgetWrapper) {
-                                config.addWidget("main", driver._id, driverProp.name, widgetLayer.id, widgetWrapper.widget.id, widgetWrapper.widget.properties);
-                                widgetWrapper.widget.properties.headertext.value = "Resistence";
-                                widgetWrapper.widget.drawText();
-                            }
-
-
-                        }
 
 
                     }
 
+		}
         }
     },
 
@@ -6448,6 +6283,312 @@ var RadialWidget =
         };
 
         return RadialWidget;
+    }(BaseWidget);﻿/* ----------------------------------------------------------------------------
+OWLOS DIY Open Source OS for building IoT ecosystems
+Copyright 2019, 2020 by:
+- Konstantin Brul (konstabrul@gmail.com)
+- Vitalii Glushchenko (cehoweek@gmail.com)
+- Denys Melnychuk (meldenvar@gmail.com)
+- Denis Kirin (deniskirinacs@gmail.com)
+
+This file is part of OWLOS DIY Open Source OS for building IoT ecosystems
+
+OWLOS is free software : you can redistribute it and/or modify it under the
+terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version.
+
+OWLOS is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with OWLOS. If not, see < https://www.gnu.org/licenses/>.
+
+GitHub: https://github.com/KirinDenis/owlos
+
+(Этот файл — часть OWLOS DIY Open Source OS for building IoT ecosystems.
+
+OWLOS - свободная программа: вы можете перераспространять ее и/или изменять
+ее на условиях Стандартной общественной лицензии GNU в том виде, в каком она
+была опубликована Фондом свободного программного обеспечения; версии 3
+лицензии, любой более поздней версии.
+
+OWLOS распространяется в надежде, что она будет полезной, но БЕЗО ВСЯКИХ
+ГАРАНТИЙ; даже без неявной гарантии ТОВАРНОГО ВИДА или ПРИГОДНОСТИ ДЛЯ
+ОПРЕДЕЛЕННЫХ ЦЕЛЕЙ.
+Подробнее см.в Стандартной общественной лицензии GNU.
+
+Вы должны были получить копию Стандартной общественной лицензии GNU вместе с
+этой программой. Если это не так, см. <https://www.gnu.org/licenses/>.)
+--------------------------------------------------------------------------------------*/
+
+var F16Widget =
+
+    function (_BaseWidget) {
+        "use strict";
+
+        _inheritsLoose(F16Widget, _BaseWidget);
+
+        function F16Widget(parentPanel, id, size) {
+            return _BaseWidget.call(this, parentPanel, id, size) || this;
+        }
+
+        F16Widget.prototype.onWidgetHolderLoad = function onWidgetHolderLoad(event) {
+            _BaseWidget.prototype.onWidgetHolderLoad.call(this, event);
+            var rPanel = event.currentTarget;
+            var widget = rPanel.widget;
+
+            widget.widgetHolder.className = "col-6 col-sm-4 col-lg-2 widgetHolder";
+
+            //animate
+            widget.animated = true;
+            widget.levelRectWidth = widget.size / 15;
+            widget.levelRectHeight = widget.size / 100;
+            widget.levelLeft = widget.width - widget.levelRectWidth + widget.halfPanding;
+            widget.levelTop = (widget.height - widget.levelRectHeight * 60 / 2) / 3;
+            widget.level1 = [];
+            widget.level2 = [];
+
+
+
+            widget.levelArc = [];
+
+            for (var i = 1; i < 5; i++) {
+                var SVGlevelArc = new SVGArc(widget.SVGViewBox, widget.id + "arcback1" + i, widget.centreX, 140, i * widget.radius, widget.size / 34);
+                SVGlevelArc.index = i;
+                SVGlevelArc.fill = theme.danger;
+
+                widget.levelArc.push(SVGlevelArc);
+            }
+
+
+            widget.radar1 = [];
+            widget.radar2 = [];
+            widget.radar3 = [];
+            widget.radar4 = [];
+
+            for (var i = 1; i < 5; i++) {
+                var SVGRadarArc1 = new SVGArc(widget.SVGViewBox, widget.id + "arcback1" + i, widget.centreX, widget.topMargin - 40, i * widget.radius, widget.size / 104);
+                var SVGRadarArc2 = new SVGArc(widget.SVGViewBox, widget.id + "arcback2" + i, widget.centreX, widget.topMargin - 40, i * widget.radius, widget.size / 94);
+                var SVGRadarArc3 = new SVGArc(widget.SVGViewBox, widget.id + "arcback3" + i, widget.centreX, widget.topMargin - 40, i * widget.radius, widget.size / 84);
+                var SVGRadarArc4 = new SVGArc(widget.SVGViewBox, widget.id + "arcback4" + i, widget.centreX, widget.topMargin - 40, i * widget.radius, widget.size / 74);
+                SVGRadarArc1.index = SVGRadarArc2.index = SVGRadarArc3.index = SVGRadarArc4.index = i;
+                SVGRadarArc1.color = SVGRadarArc2.color = SVGRadarArc3.color = SVGRadarArc4.color = theme.warning;
+                widget.radar1.push(SVGRadarArc1);
+                widget.radar2.push(SVGRadarArc2);
+                widget.radar3.push(SVGRadarArc3);
+                widget.radar4.push(SVGRadarArc4);
+            }
+
+            requestAnimationFrame(function () {
+                return widget.animate();
+            });
+
+            //Light power slider
+
+            widget.SVGLightMPlus = new SVGIcon(widget.SVGViewBox, plusIcon, 10, 35, 15, 15);
+            widget.SVGLightMMinus = new SVGIcon(widget.SVGViewBox, minusIcon, 10, 110, 15, 15);
+
+            widget.SVGLightMRect = new SVGRect(widget.SVGViewBox, "lightmrect", 10 + 6, 50, 2, 60);
+            widget.SVGLightMRect.fill = theme.warning;
+            widget.SVGLightMRect.opacity = 0.5;
+            
+            widget.SVGLightNMPlus = new SVGIcon(widget.SVGViewBox, plusIcon, 135, 35, 15, 15);
+            widget.SVGLightNMMinus = new SVGIcon(widget.SVGViewBox, minusIcon, 135, 110, 15, 15);
+
+            widget.SVGLightNMRect = new SVGRect(widget.SVGViewBox, "lightnmrect", 135 + 6, 50, 2, 60);
+            widget.SVGLightNMRect.fill = theme.warning;
+            widget.SVGLightNMRect.opacity = 0.5;
+
+            widget.SVGMotionIcon = new SVGIcon(widget.SVGViewBox, motionIcon, widget.centreX - 20, 95, 40, 40);
+            widget.SVGMotionIcon.fill = theme.danger;
+            widget.SVGMotionIcon.opacity = 0.5;
+
+
+            widget.SVGLampIcon = new SVGIcon(widget.SVGViewBox, lampIcon, widget.centreX - 20, 25, 40, 40);
+            widget.SVGLampIcon.fill = theme.warning;
+            widget.SVGLampIcon.opacity = 0.5;
+
+            
+            //--- animate
+            widget.clickableToTop();
+            widget.proprties = widget._properties;
+            widget.doOnLoad();
+
+            widget.SVGViewBox.setAttributeNS(null, "width", widget.size * 2);
+            widget.SVGViewBox.setAttributeNS(null, "height", widget.size * 2);
+
+            widget._resize(widget.size);
+
+            //events 
+            widget.SVGLightModeSwitcher = new SVGIcon(widget.SVGViewBox, "", widget.centreX - 25, widget.centreY - 25, widget.centreX + 25, widget.centreY + 25);
+            widget.SVGLightModeSwitcher.SVGIcon.onclick = widget.lightModeWidgetClick;
+            widget.SVGLightModeSwitcher.SVGIcon.widget = widget;
+            widget.SVGViewBox.insertBefore(widget.SVGLightModeSwitcher.SVGIcon, widget.SVGViewBox.childNodes.lastChild);
+
+            widget.SVGArcWidget.opacity = 0;
+            widget.SVGArcBack.opacity = 0;
+        }
+
+        F16Widget.prototype.lightModeWidgetClick = function lightModeWidgetClick(event) {
+            event.stopPropagation();
+            var widget = event.currentTarget.widget;
+                        
+            if (widget.mode == WORK_MODE) {
+                var driverProperty = widget.driverClass.driver["light1mode"];
+                if (driverProperty == undefined) return;
+                var newLight1Mode = parseInt(driverProperty.value) + 1;
+                if (newLight1Mode > 3) {
+                    newLight1Mode = 0;
+                }
+                driverProperty.setValue(newLight1Mode);
+            }
+            return true;
+        };
+
+
+        F16Widget.prototype._resize = function _resize(size) {
+            if (this.size != size) {
+                this.SVGViewBox.setAttributeNS(null, "width", size );
+                this.SVGViewBox.setAttributeNS(null, "height", size);
+
+            }
+            this.size != size
+
+            this.width = this.size;
+            this.height = this.size;
+            this.centreX = this.width / 2; //  this.centreY = this.height / 2;
+            this.widgetTextSize = this.size / 210;
+            this.graphWidth = this.width - this.panding;
+            this.graphHeight = this.height - this.size / 3.4;
+            this.graphTop = this.size / 3.7;
+
+            this.radius = this.size / 5;
+            this._properties.linewidth = 4;
+
+            this.topMargin = this.centreY + this.size / 10;
+            this.SVGArcSpinner.y = this.topMargin * 2;
+
+            if (this.SVGViewBox == undefined) return;
+
+
+            this.SVGBackgroundPanel.drawRoundedRect(this.width - 5, this.height - 6, 5, 10, true, true, true, true);
+            this.SVGBackdownpanel.drawRoundedRect(this.width - 5, 10, 5, 0, false, false, true, true);
+            this.SVGHeaderPanel.drawRoundedRect(this.width, 26, 5, 0, true, true, false, false);
+
+            this.SVGArcBack = new SVGArc(this.SVGViewBox, this.id + "arcback", this.centreX, this.topMargin, this.radius, this._properties.linewidth);
+            this.SVGArcWidget = new SVGArc(this.SVGViewBox, this.id + "arcwidget", this.centreX, this.topMargin, this.radius, this._properties.linewidth);
+
+            this.SVGWidgetText.size = this.size / 160;
+            
+            this.drawText();
+            //this.SVGWidgetText.text = "Auto";
+            this.SVGHeaderText.size = this.size / 260;
+            
+
+            if (this.SVGLightPowerSlider) {
+             //   this.SVGLightPowerSlider.drawRoundedRect(this.width / 20, this.height / 3, 20, 20, true, true, false, false);
+                
+            }
+
+        }
+
+        F16Widget.prototype.resize = function resize(size) {
+
+            this._resize(size);
+
+        };
+
+        F16Widget.prototype.animate = function animate() {
+            var baseWidget2 = this;
+
+            if (this.animated) {
+                //animate motion
+                for (var i = 0; i < 4; i++) {
+                    this.levelArc[i].radius += 1.4;
+                    this.levelArc[i].opacity -= 0.01;
+
+                    if (this.levelArc[i].radius > this.radius * 10) {
+                        this.levelArc[i].radius = this.radius;
+                        this.levelArc[i].opacity = 0.6;
+                    }
+
+                    this.levelArc[i].draw(280 + 60, 80 - 60);
+                
+                //animate light intensive 
+                
+                    this.radar1[i].radius += 0.5;
+                    this.radar1[i].opacity -= 0.01;
+
+                    if (this.radar1[i].radius > this.radius * 2) {
+                        this.radar1[i].radius = this.radius / 2;
+                        this.radar1[i].opacity = 0.7;
+                    }
+                    //90..270 step 10
+                    this.radar1[i].draw(90 + 10, 135 - 10);
+                    this.radar2[i].radius = this.radar3[i].radius = this.radar4[i].radius = this.radar1[i].radius;
+                    this.radar2[i].opacity = this.radar3[i].opacity = this.radar4[i].opacity = this.radar1[i].opacity;
+                    this.radar2[i].draw(135+10, 180 - 10);
+                    this.radar3[i].draw(180 + 10, 225 - 10);
+                    this.radar4[i].draw(225 + 10, 270 - 10);
+                }
+
+
+                requestAnimationFrame(function () {
+                    return baseWidget2.animate();
+                });
+            }
+        };
+
+
+        F16Widget.prototype.drawWidget = function drawWidget() {
+            _BaseWidget.prototype.drawWidget.call(this);
+
+            if (this.SVGArcBack == undefined) return;
+
+            var _data = this.data;
+
+            var oneHangPercent = 360 + 90 + 30 - 240;
+            var drawPercent = _data * (oneHangPercent / 100); //back f16 widget
+
+            //this.SVGArcBack.linewidth = this._properties.linewidth.value;
+            //this.SVGArcWidget.linewidth = this._properties.linewidth.value;
+
+            //this.SVGArcBack.color = theme.warning;
+            //this.SVGArcBack.opacity = 0.5;
+
+            //this.SVGArcBack.draw(240, 240 + oneHangPercent); //f16 widget
+
+            //this.SVGArcWidget.draw(240, 240 + drawPercent);
+
+            //this.SVGLightMPlus.opacity = 1.0;
+            this.SVGLightMPlus.fill = this.SVGLightMMinus.fill = this.SVGLightNMPlus.fill = this.SVGLightNMMinus.fill = theme.info;
+
+            /*
+            switch (this._networkStatus) {
+                case NET_ONLINE:
+                    this.toColor(this.SVGArcWidget, theme.warning);
+                    break;
+
+                case NET_ERROR:
+                    this.toColor(this.SVGArcWidget, theme.warning);
+                    break;
+
+                case NET_RECONNECT:
+                    this.toColor(this.SVGArcWidget, theme.warning);
+                    break;
+
+                default:
+                    //offline
+                    this.toColor(this.SVGArcWidget, theme.warning);
+                    break;
+            }
+            */
+        };
+
+        return F16Widget;
     }(BaseWidget);﻿/* ----------------------------------------------------------------------------
 OWLOS DIY Open Source OS for building IoT ecosystems
 Copyright 2019, 2020 by:
@@ -8107,7 +8248,7 @@ var TableWidget =
     }(); //ENDOF driverTable
 ﻿/* ----------------------------------------------------------------------------
 OWLOS DIY Open Source OS for building IoT ecosystems
-Copyright 2019, 2020 by:
+Copyright 2019, 2020, 2021, 2022 by:
 - Konstantin Brul (konstabrul@gmail.com)
 - Vitalii Glushchenko (cehoweek@gmail.com)
 - Denys Melnychuk (meldenvar@gmail.com)
@@ -9180,10 +9321,10 @@ var config = {
                             },
                             thingRefresh(thing) {
                                 drivers.refresh(thing);
-                                pins.refresh(thing);
-                                driverPins.refresh(thing);
-                                accessableDrivers.refresh(thing);
-                                scriptsService.refresh(thing);
+                                //pins.refresh(thing);
+                                //driverPins.refresh(thing);
+                                //accessableDrivers.refresh(thing);
+                                //scriptsService.refresh(thing);
                             }
 
                         }
@@ -10097,6 +10238,7 @@ var driversUI = {
 
 /*
  * Material design icons is the official [icon set](https://www.google.com/design/spec/style/icons.html#icons-system-icons) from Google.  The icons are designed under the [material design guidelines](https://material.io/guidelines/).
+ * Also spacial thanks to https://freesvg.org
  */
 var addIcon = "M42 6H6c-2.21 0-4 1.79-4 4v24c0 2.21 1.79 4 4 4h10v4h16v-4h10c2.21 0 3.98-1.79 3.98-4L46 10c0-2.21-1.79-4-4-4zm0 28H6V10h36v24zM32 20v4h-6v6h-4v-6h-6v-4h6v-6h4v6h6z";
 var cloudIcon = "M38.71 20.07C37.35 13.19 31.28 8 24 8c-5.78 0-10.79 3.28-13.3 8.07C4.69 16.72 0 21.81 0 28c0 6.63 5.37 12 12 12h26c5.52 0 10-4.48 10-10 0-5.28-4.11-9.56-9.29-9.93zM38 36H12c-4.42 0-8-3.58-8-8s3.58-8 8-8h1.42c1.31-4.61 5.54-8 10.58-8 6.08 0 11 4.92 11 11v1h3c3.31 0 6 2.69 6 6s-2.69 6-6 6z";
@@ -10111,12 +10253,12 @@ var lampIcon = "M7.1 37.07l2.83 2.83 3.59-3.59-2.83-2.83-3.59 3.59zM22 44.9h4V39
 var wifiIcon = "M7.07 21.91l16.92 21.07.01.02.02-.02 16.92-21.07C40.08 21.25 33.62 16 24 16c-9.63 0-16.08 5.25-16.93 5.91z";
 var buildIcon = "M45.4 37.9L27.1 19.6c1.8-4.6.8-10.1-2.9-13.8-4-4-10-4.8-14.8-2.5l8.7 8.7-6.1 6.1-8.7-8.7C1 14.2 1.8 20.2 5.8 24.2c3.7 3.7 9.2 4.7 13.8 2.9l18.3 18.3c.8.8 2.1.8 2.8 0l4.7-4.7c.8-.7.8-2 0-2.8z";
 var deleteIcon = "M29.17 16L24 21.17 18.83 16 16 18.83 21.17 24 16 29.17 18.83 32 24 26.83 29.17 32 32 29.17 26.83 24 32 18.83 29.17 16zM24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm0 36c-8.82 0-16-7.18-16-16S15.18 8 24 8s16 7.18 16 16-7.18 16-16 16z";
-
+var sliderIcon = "M510,11939c-25,-5 -82,-27 -129,-49 -152,-73 -272,-220 -315,-387 -14,-55 -16,-591 -16,-5503 0,-4912 2,-5448 16,-5503 43,-167 163,-314 315,-387 95,-45 160,-60 264,-60 104,0 169,15 264,60 152,73 272,220 315,387 14,55 16,591 16,5503 0,4912 -2,5448 -16,5503 -43,167 -163,314 -315,387 -46,22 -108,44 -138,50 -64,12 -198,11 -261,-1z";
 
 
 /* ----------------------------------------------------------------------------
 OWLOS DIY Open Source OS for building IoT ecosystems
-Copyright 2019, 2020 by:
+Copyright 2019, 2020, 2021, 2022 by:
 - Konstantin Brul (konstabrul@gmail.com)
 - Vitalii Glushchenko (cehoweek@gmail.com)
 - Denys Melnychuk (meldenvar@gmail.com)
@@ -11573,7 +11715,7 @@ var BaseWidgetWrapper =
         return BaseWidgetWrapper;
     }();
 
-
+//-----------------------------------------------------------------------------------------------------------------------
 var RadialWidgetWrapper =
 
     function (_BaseWidgetWrapper) {
@@ -11618,6 +11760,83 @@ var RadialWidgetWrapper =
 
 //-----------------------------------------------------------------------------------------------------------------------
 
+var F16WidgetWrapper =
+
+    function (_BaseWidgetWrapper) {
+        "use strict";
+
+        _inheritsLoose(F16WidgetWrapper, _BaseWidgetWrapper);
+
+        var _proto2 = F16WidgetWrapper.prototype;
+
+        _proto2.offlineStarter = function offlineStarter(parentPanel, driverId, driverPropertyName) {
+            _BaseWidgetWrapper.prototype.offlineStarter.call(this, parentPanel, driverId, driverPropertyName, true);
+
+            this.widget = new F16Widget(parentPanel, this.makeUniqueId(driverId), configProperties.widgetssize);
+            this.widget.driverClass = this;
+            this.widget.onload = this.onWidgetLoad;
+        };
+
+        function F16WidgetWrapper(parentPanel, driver, driverProperty, configPropertiesWidget, widgetProperties) {
+            var _this;
+
+            _this = _BaseWidgetWrapper.call(this, parentPanel, driver, driverProperty, true, configPropertiesWidget, widgetProperties) || this;
+            if (driver == undefined) return _assertThisInitialized(_this);
+
+            
+            return _this;
+        }
+
+        _proto2.joinDriver = function joinDriver(driver, driverProperty) {
+            this.driver = driver;
+            this.driverProperty = driverProperty;
+            if (this.widget != undefined) {
+                this.widget.driverClass.driverProperty = driverProperty;
+            }
+            this.thing = config.getThingByHost(driver._host); //drivers.addNetworkStatusListner(this.onNetworkStatusChange, this);
+
+            this.thing.addNetworkStatusListner(this.onNetworkStatusChange, this);
+            this.driver["light1mode"].addNetworkStatusListner(this.onNetworkStatusChange, this);
+            //this.driverProperty.addValueListner(this.onValueChange, this);
+            this.driver["light1mode"].addValueListner(this.onLight1ModeValueChange, this);
+        };
+
+        _proto2.onLight1ModeValueChange = function onLight1ModeValueChange(sender, driverProperty) {
+            sender.draw();
+        };
+
+        _proto2.onNetworkStatusChange = function onNetworkStatusChange(sender, driverProperty) {
+            if (sender.widget != undefined) {
+                sender.widget.networkStatus = driverProperty.networkStatus;
+            }
+        };
+
+        _proto2.draw = function draw() {
+            if (this.widget == undefined) return;
+            if (this.driver == undefined) return;
+
+            if (this.driverProperty.networkStatus == NET_ONLINE) {
+
+                switch (parseInt(driver["light1mode"].value)) {
+                    case 1: var F16Mode = "On"; break;
+                    case 2: var F16Mode = "Light"; break;
+                    case 3: var F16Mode = "Light/Motion"; break;
+                    default: var F16Mode = "Off"; break;                    
+                }
+
+                this.widget.refresh(F16Mode, F16Mode, this.driver._id);
+            } else {
+                this.widget.refresh(0, "--", this.driver._id);
+            }
+
+            this.widget.networkStatus = this.driverProperty.networkStatus;
+            return true;
+        };
+
+        return F16WidgetWrapper;
+    }(BaseWidgetWrapper);
+
+//-----------------------------------------------------------------------------------------------------------------------
 
 var TemperatureWidgetWrapper =
 
@@ -12445,6 +12664,13 @@ var WidgetsLayer = {
         driversTypes: "any",
         driversProperties: "any"
     },
+    F16Widget: {
+        id: "f16widget",
+        name: getLang("f16"),
+        widget: F16WidgetWrapper,
+        driversTypes: "any",
+        driversProperties: "any"
+    },
     TemperatureWidget: {
         id: "temperature",
         name: getLang("temperature"),
@@ -12728,9 +12954,9 @@ function loadingScripts(withInternet) {
                             loadingScript("dialogprogressbarelement.js");
 
                             var baseWidgetScript = document.createElement('script');
-                            baseWidgetScript.onload = function () {
-                                //  loadingScript("basewidget.js");
+                            baseWidgetScript.onload = function () {                                
                                 loadingScript("radialwidget.js");
+                                loadingScript("f16widget.js");
                                 loadingScript("actuatorwidget.js");
                                 loadingScript("lcdwidget.js");
                                 loadingScript("stepperwidget.js");

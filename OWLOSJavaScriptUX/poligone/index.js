@@ -39,6 +39,20 @@ $(document).ready(function () {
 
     var driversWidgetsPanel = document.getElementById("driversWidgetsPanel");
 
+
+
+    var f16Widget = new F16Widget(driversWidgetsPanel, "temperature", 150, temperatureIcon).onload = function (widget) {
+        widget.refresh("Auto", "Auto", "Lamp 1");
+        widget.networkStatus = NET_ONLINE;
+    };
+
+    var f16Widget = new F16Widget(driversWidgetsPanel, "temperature", 150, temperatureIcon).onload = function (widget) {
+        widget.refresh("On", "On", "Lamp 2");
+        widget.networkStatus = NET_OFFLINE;
+    };
+
+
+
     var graphWidget = new GraphWidget(driversWidgetsPanel, "temperature", 150, temperatureIcon).onload = function (widget) {
         widget.refresh("temperature", "temperature", "4;1000.10;0.30;2500.40;1000.010;");
         widget.networkStatus = NET_ONLINE;

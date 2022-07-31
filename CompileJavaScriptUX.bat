@@ -171,6 +171,10 @@ D:\7Zip\7z.exe a -mx9 radialwidget.js.gz radialwidget.js
 move  "radialwidget.js.gz" "CompressedFull\radialwidget.js.gz"
 type  "radialwidget.js" >> "CompressedPackOne\owlos.js"
 
+D:\7Zip\7z.exe a -mx9 f16widget.js.gz f16widget.js
+move  "f16widget.js.gz" "CompressedFull\f16widget.js.gz"
+type  "f16widget.js" >> "CompressedPackOne\owlos.js"
+
 D:\7Zip\7z.exe a -mx9 smokewidget.js.gz smokewidget.js
 move  "smokewidget.js.gz" "CompressedFull\smokewidget.js.gz"
 type  "smokewidget.js" >> "CompressedPackOne\owlos.js"

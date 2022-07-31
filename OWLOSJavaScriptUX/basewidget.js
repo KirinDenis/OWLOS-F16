@@ -891,11 +891,13 @@ var BaseWidget =
 
             if (this._data == data && this.widgetText == widgetText && this._properties.headertext == label) return;
 
-            if (this._properties.headertext.value === '---') {
-                this._properties.headertext.value = label;
-            }
-            if (this.widgetText != widgetText) {
-                speak(this._properties.headertext + " " + widgetText);
+            if (this._properties != undefined) {
+                if (this._properties.headertext.value === '---') {
+                    this._properties.headertext.value = label;
+                }
+                if (this.widgetText != widgetText) {
+                    speak(this._properties.headertext + " " + widgetText);
+                }
             }
             this.historyData = historyData;
             this._data = data;

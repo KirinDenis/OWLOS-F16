@@ -251,15 +251,49 @@ var F16WidgetWrapper =
 
             _this = _BaseWidgetWrapper.call(this, parentPanel, driver, driverProperty, true, configPropertiesWidget, widgetProperties) || this;
             if (driver == undefined) return _assertThisInitialized(_this);
+
+            
             return _this;
         }
 
+        _proto2.joinDriver = function joinDriver(driver, driverProperty) {
+            this.driver = driver;
+            this.driverProperty = driverProperty;
+            if (this.widget != undefined) {
+                this.widget.driverClass.driverProperty = driverProperty;
+            }
+            this.thing = config.getThingByHost(driver._host); //drivers.addNetworkStatusListner(this.onNetworkStatusChange, this);
+
+            this.thing.addNetworkStatusListner(this.onNetworkStatusChange, this);
+            this.driver["light1mode"].addNetworkStatusListner(this.onNetworkStatusChange, this);
+            //this.driverProperty.addValueListner(this.onValueChange, this);
+            this.driver["light1mode"].addValueListner(this.onLight1ModeValueChange, this);
+        };
+
+        _proto2.onLight1ModeValueChange = function onLight1ModeValueChange(sender, driverProperty) {
+            sender.draw();
+        };
+
+        _proto2.onNetworkStatusChange = function onNetworkStatusChange(sender, driverProperty) {
+            if (sender.widget != undefined) {
+                sender.widget.networkStatus = driverProperty.networkStatus;
+            }
+        };
+
         _proto2.draw = function draw() {
             if (this.widget == undefined) return;
-            if (this.driverProperty == undefined) return;
+            if (this.driver == undefined) return;
 
             if (this.driverProperty.networkStatus == NET_ONLINE) {
-                this.widget.refresh(this.driverProperty.value, this.driverProperty.value, this.driver._id);
+
+                switch (parseInt(driver["light1mode"].value)) {
+                    case 1: var F16Mode = "On"; break;
+                    case 2: var F16Mode = "Light"; break;
+                    case 3: var F16Mode = "Light/Motion"; break;
+                    default: var F16Mode = "Off"; break;                    
+                }
+
+                this.widget.refresh(F16Mode, F16Mode, this.driver._id);
             } else {
                 this.widget.refresh(0, "--", this.driver._id);
             }

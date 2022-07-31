@@ -71,9 +71,9 @@ var F16Widget =
             widget.levelArc = [];
 
             for (var i = 1; i < 5; i++) {
-                var SVGlevelArc = new SVGArc(widget.SVGViewBox, widget.id + "arcback1" + i, widget.centreX, widget.levelTop, i * widget.radius, widget.size / 34);
+                var SVGlevelArc = new SVGArc(widget.SVGViewBox, widget.id + "arcback1" + i, widget.centreX, 140, i * widget.radius, widget.size / 34);
                 SVGlevelArc.index = i;
-                SVGlevelArc.fill = theme.info;
+                SVGlevelArc.fill = theme.danger;
 
                 widget.levelArc.push(SVGlevelArc);
             }
@@ -85,10 +85,10 @@ var F16Widget =
             widget.radar4 = [];
 
             for (var i = 1; i < 5; i++) {
-                var SVGRadarArc1 = new SVGArc(widget.SVGViewBox, widget.id + "arcback1" + i, widget.centreX, widget.topMargin, i * widget.radius, widget.size / 104);
-                var SVGRadarArc2 = new SVGArc(widget.SVGViewBox, widget.id + "arcback2" + i, widget.centreX, widget.topMargin, i * widget.radius, widget.size / 94);
-                var SVGRadarArc3 = new SVGArc(widget.SVGViewBox, widget.id + "arcback3" + i, widget.centreX, widget.topMargin, i * widget.radius, widget.size / 84);
-                var SVGRadarArc4 = new SVGArc(widget.SVGViewBox, widget.id + "arcback4" + i, widget.centreX, widget.topMargin, i * widget.radius, widget.size / 74);
+                var SVGRadarArc1 = new SVGArc(widget.SVGViewBox, widget.id + "arcback1" + i, widget.centreX, widget.topMargin - 40, i * widget.radius, widget.size / 104);
+                var SVGRadarArc2 = new SVGArc(widget.SVGViewBox, widget.id + "arcback2" + i, widget.centreX, widget.topMargin - 40, i * widget.radius, widget.size / 94);
+                var SVGRadarArc3 = new SVGArc(widget.SVGViewBox, widget.id + "arcback3" + i, widget.centreX, widget.topMargin - 40, i * widget.radius, widget.size / 84);
+                var SVGRadarArc4 = new SVGArc(widget.SVGViewBox, widget.id + "arcback4" + i, widget.centreX, widget.topMargin - 40, i * widget.radius, widget.size / 74);
                 SVGRadarArc1.index = SVGRadarArc2.index = SVGRadarArc3.index = SVGRadarArc4.index = i;
                 SVGRadarArc1.color = SVGRadarArc2.color = SVGRadarArc3.color = SVGRadarArc4.color = theme.warning;
                 widget.radar1.push(SVGRadarArc1);
@@ -103,60 +103,31 @@ var F16Widget =
 
             //Light power slider
 
-            widget.SVGPlusSlider = new SVGIcon(widget.SVGViewBox, plusIcon, 10, 25, 20, 20);
-            widget.SVGMinusSlider = new SVGIcon(widget.SVGViewBox, minusIcon, 10, 80, 20, 20);
+            widget.SVGLightMPlus = new SVGIcon(widget.SVGViewBox, plusIcon, 10, 35, 15, 15);
+            widget.SVGLightMMinus = new SVGIcon(widget.SVGViewBox, minusIcon, 10, 110, 15, 15);
 
-
-            //--- animate
-            widget._properties.linewidth =
-            {
-                tab: "G",
-                value: 10,
-                type: "i"
-            };
-
-            widget._properties.rangetype =
-            {
-                tab: "G",
-                value: 'true',
-                type: "b"
-            };
-
-            widget._properties.min =
-            {
-                tab: "G",
-                value: 0,
-                type: "f"
-            };
-
-            widget._properties.max =
-            {
-                tab: "G",
-                value: 100,
-                type: "f"
-            };
-
-            widget._properties.percentbackgroundcolor =
-            {
-                tab: "C",
-                value: theme.secondary,
-                type: "c"
-            };
-
-            widget._properties.percentbackgroundopacity =
-            {
-                tab: "O",
-                value: 0.5,
-                type: "f"
-            };
-
-            widget._properties.percentcolor =
-            {
-                tab: "C",
-                value: theme.success,
-                type: "c"
-            };
+            widget.SVGLightMRect = new SVGRect(widget.SVGViewBox, "lightmrect", 10 + 6, 50, 2, 60);
+            widget.SVGLightMRect.fill = theme.warning;
+            widget.SVGLightMRect.opacity = 0.5;
             
+            widget.SVGLightNMPlus = new SVGIcon(widget.SVGViewBox, plusIcon, 135, 35, 15, 15);
+            widget.SVGLightNMMinus = new SVGIcon(widget.SVGViewBox, minusIcon, 135, 110, 15, 15);
+
+            widget.SVGLightNMRect = new SVGRect(widget.SVGViewBox, "lightnmrect", 135 + 6, 50, 2, 60);
+            widget.SVGLightNMRect.fill = theme.warning;
+            widget.SVGLightNMRect.opacity = 0.5;
+
+            widget.SVGMotionIcon = new SVGIcon(widget.SVGViewBox, motionIcon, widget.centreX - 20, 95, 40, 40);
+            widget.SVGMotionIcon.fill = theme.danger;
+            widget.SVGMotionIcon.opacity = 0.5;
+
+
+            widget.SVGLampIcon = new SVGIcon(widget.SVGViewBox, lampIcon, widget.centreX - 20, 25, 40, 40);
+            widget.SVGLampIcon.fill = theme.warning;
+            widget.SVGLampIcon.opacity = 0.5;
+
+            
+            //--- animate
             widget.clickableToTop();
             widget.proprties = widget._properties;
             widget.doOnLoad();
@@ -165,7 +136,33 @@ var F16Widget =
             widget.SVGViewBox.setAttributeNS(null, "height", widget.size * 2);
 
             widget._resize(widget.size);
+
+            //events 
+            widget.SVGLightModeSwitcher = new SVGIcon(widget.SVGViewBox, "", widget.centreX - 25, widget.centreY - 25, widget.centreX + 25, widget.centreY + 25);
+            widget.SVGLightModeSwitcher.SVGIcon.onclick = widget.lightModeWidgetClick;
+            widget.SVGLightModeSwitcher.SVGIcon.widget = widget;
+            widget.SVGViewBox.insertBefore(widget.SVGLightModeSwitcher.SVGIcon, widget.SVGViewBox.childNodes.lastChild);
+
+            widget.SVGArcWidget.opacity = 0;
+            widget.SVGArcBack.opacity = 0;
         }
+
+        F16Widget.prototype.lightModeWidgetClick = function lightModeWidgetClick(event) {
+            event.stopPropagation();
+            var widget = event.currentTarget.widget;
+                        
+            if (widget.mode == WORK_MODE) {
+                var driverProperty = widget.driverClass.driver["light1mode"];
+                if (driverProperty == undefined) return;
+                var newLight1Mode = parseInt(driverProperty.value) + 1;
+                if (newLight1Mode > 3) {
+                    newLight1Mode = 0;
+                }
+                driverProperty.setValue(newLight1Mode);
+            }
+            return true;
+        };
+
 
         F16Widget.prototype._resize = function _resize(size) {
             if (this.size != size) {
@@ -200,7 +197,9 @@ var F16Widget =
             this.SVGArcWidget = new SVGArc(this.SVGViewBox, this.id + "arcwidget", this.centreX, this.topMargin, this.radius, this._properties.linewidth);
 
             this.SVGWidgetText.size = this.size / 160;
-            this.SVGWidgetText.text = "Auto";
+            
+            this.drawText();
+            //this.SVGWidgetText.text = "Auto";
             this.SVGHeaderText.size = this.size / 260;
             
 
@@ -231,7 +230,7 @@ var F16Widget =
                         this.levelArc[i].opacity = 0.6;
                     }
 
-                    this.levelArc[i].draw(90 + 60, 270 - 60);
+                    this.levelArc[i].draw(280 + 60, 80 - 60);
                 
                 //animate light intensive 
                 
@@ -242,13 +241,13 @@ var F16Widget =
                         this.radar1[i].radius = this.radius / 2;
                         this.radar1[i].opacity = 0.7;
                     }
-
-                    this.radar1[i].draw(270 + 15, 350 - 15);
+                    //90..270 step 10
+                    this.radar1[i].draw(90 + 10, 135 - 10);
                     this.radar2[i].radius = this.radar3[i].radius = this.radar4[i].radius = this.radar1[i].radius;
                     this.radar2[i].opacity = this.radar3[i].opacity = this.radar4[i].opacity = this.radar1[i].opacity;
-                    this.radar2[i].draw(15, 90 - 15);
-                    this.radar3[i].draw(90 + 16, 180 - 15);
-                    this.radar4[i].draw(180 + 15, 270 - 15);
+                    this.radar2[i].draw(135+10, 180 - 10);
+                    this.radar3[i].draw(180 + 10, 225 - 10);
+                    this.radar4[i].draw(225 + 10, 270 - 10);
                 }
 
 
@@ -265,38 +264,24 @@ var F16Widget =
             if (this.SVGArcBack == undefined) return;
 
             var _data = this.data;
-            if (this._properties.rangetype.value !== 'true') { //когда randge
-                var range = this._properties.max.value - this._properties.min.value;
-                _data = this.data / (range / 100);
-            }
-            else {
-                
-                if ((_data > 100) || (_data < 0)) {
-                    this.toColor(this.SVGArcWidget, theme.warning);
-                }
-            }
 
             var oneHangPercent = 360 + 90 + 30 - 240;
             var drawPercent = _data * (oneHangPercent / 100); //back f16 widget
 
-            this.SVGArcBack.linewidth = this._properties.linewidth.value;
-            this.SVGArcWidget.linewidth = this._properties.linewidth.value;
+            //this.SVGArcBack.linewidth = this._properties.linewidth.value;
+            //this.SVGArcWidget.linewidth = this._properties.linewidth.value;
 
-            this.SVGArcBack.color = this._properties.percentbackgroundcolor.value;
-            this.SVGArcBack.opacity = this._properties.percentbackgroundopacity.value;
+            //this.SVGArcBack.color = theme.warning;
+            //this.SVGArcBack.opacity = 0.5;
 
-            this.SVGArcBack.draw(240, 240 + oneHangPercent); //f16 widget
+            //this.SVGArcBack.draw(240, 240 + oneHangPercent); //f16 widget
 
-            this.SVGArcWidget.draw(240, 240 + drawPercent);
+            //this.SVGArcWidget.draw(240, 240 + drawPercent);
 
-            this.SVGPlusSlider.opacity = 1.0;
-            this.SVGPlusSlider.fill = theme.info;
+            //this.SVGLightMPlus.opacity = 1.0;
+            this.SVGLightMPlus.fill = this.SVGLightMMinus.fill = this.SVGLightNMPlus.fill = this.SVGLightNMMinus.fill = theme.info;
 
-            this.SVGMinusSlider.opacity = 1.0;
-            this.SVGMinusSlider.fill = theme.info;
-
-
-
+            /*
             switch (this._networkStatus) {
                 case NET_ONLINE:
                     this.toColor(this.SVGArcWidget, theme.warning);
@@ -315,6 +300,7 @@ var F16Widget =
                     this.toColor(this.SVGArcWidget, theme.warning);
                     break;
             }
+            */
         };
 
         return F16Widget;
