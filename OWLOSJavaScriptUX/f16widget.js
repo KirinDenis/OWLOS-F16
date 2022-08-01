@@ -55,18 +55,28 @@ var F16Widget =
             var rPanel = event.currentTarget;
             var widget = rPanel.widget;
 
+            widget.size = widget.size;
+            widget.gold1 = widget.size;
+            widget.gold2 = widget.gold1 / 1.6180339887;
+            widget.gold3 = widget.gold2 / 1.6180339887;
+            widget.gold4 = widget.gold3 / 1.6180339887;
+            widget.gold5 = widget.gold4 / 1.6180339887;
+            widget.gold6 = widget.gold5 / 1.6180339887;
+            widget.gold7 = widget.gold6 / 1.6180339887;
+            widget.gold8 = widget.gold7 / 1.6180339887;
+            widget.gold9 = widget.gold8 / 1.6180339887;
+            widget.gold10 = widget.gold9 / 1.6180339887;
+
             widget.widgetHolder.className = "col-6 col-sm-4 col-lg-2 widgetHolder";
 
             //animate
             widget.animated = true;
-            widget.levelRectWidth = widget.size / 15;
-            widget.levelRectHeight = widget.size / 100;
-            widget.levelLeft = widget.width - widget.levelRectWidth + widget.halfPanding;
-            widget.levelTop = (widget.height - widget.levelRectHeight * 60 / 2) / 3;
-            widget.level1 = [];
-            widget.level2 = [];
-
-
+            //widget.levelRectWidth = widget.size / 15;
+            //widget.levelRectHeight = widget.size / 100;
+           //widget.levelLeft = widget.width - widget.levelRectWidth + widget.halfPanding;
+           // widget.levelTop = (widget.height - widget.levelRectHeight * 60 / 2) / 3;
+            //widget.level1 = [];
+            //widget.level2 = [];
 
             widget.levelArc = [];
 
@@ -101,28 +111,34 @@ var F16Widget =
                 return widget.animate();
             });
 
+            widget.SVGHeaderPanel = new SVGArc(widget.SVGViewBox, widget.id + "headerpanel", 0, 0, widget.width, 1);
+            widget.SVGHeaderPanel.drawRoundedRect(widget.width, widget.gold5, 5, 0, true, true, false, false);
+
+
             //Light power slider
+            //Motion
+            widget.SVGLightMPlus = new SVGIcon(widget.SVGViewBox, plusIcon, widget.gold6, widget.gold4, widget.gold6, widget.gold6);
+            widget.SVGLightMMinus = new SVGIcon(widget.SVGViewBox, minusIcon, widget.gold6, widget.height - widget.gold4, widget.gold6, widget.gold6);
 
-            widget.SVGLightMPlus = new SVGIcon(widget.SVGViewBox, plusIcon, 10, 35, 15, 15);
-            widget.SVGLightMMinus = new SVGIcon(widget.SVGViewBox, minusIcon, 10, 110, 15, 15);
-
-            widget.SVGLightMRect = new SVGRect(widget.SVGViewBox, "lightmrect", 10 + 6, 50, 2, 60);
+            widget.SVGLightMRect = new SVGRect(widget.SVGViewBox, "lightmrect", widget.gold6 + widget.gold6 / 2 - widget.gold10 / 2, widget.gold4 + widget.gold6, widget.gold10, widget.height - widget.gold4 * 2 - widget.gold6);
             widget.SVGLightMRect.fill = theme.warning;
             widget.SVGLightMRect.opacity = 0.5;
-            
-            widget.SVGLightNMPlus = new SVGIcon(widget.SVGViewBox, plusIcon, 135, 35, 15, 15);
-            widget.SVGLightNMMinus = new SVGIcon(widget.SVGViewBox, minusIcon, 135, 110, 15, 15);
 
-            widget.SVGLightNMRect = new SVGRect(widget.SVGViewBox, "lightnmrect", 135 + 6, 50, 2, 60);
+            //No motion
+            widget.SVGLightNMPlus = new SVGIcon(widget.SVGViewBox, plusIcon, widget.gold1 - widget.gold6 - widget.gold7, widget.gold4, widget.gold6, widget.gold6);
+            widget.SVGLightNMMinus = new SVGIcon(widget.SVGViewBox, minusIcon, widget.gold1 - widget.gold6 - widget.gold7, widget.height - widget.gold4, widget.gold6, widget.gold6);
+
+            widget.SVGLightNMRect = new SVGRect(widget.SVGViewBox, "lightnmrect", widget.gold1 - widget.gold6 - widget.gold7 + widget.gold6 / 2 - widget.gold10 / 2, widget.gold4 + widget.gold6, widget.gold10, widget.height - widget.gold4 * 2 - widget.gold6);
             widget.SVGLightNMRect.fill = theme.warning;
             widget.SVGLightNMRect.opacity = 0.5;
 
-            widget.SVGMotionIcon = new SVGIcon(widget.SVGViewBox, motionIcon, widget.centreX - 20, 95, 40, 40);
+            //Sensor
+            widget.SVGMotionIcon = new SVGIcon(widget.SVGViewBox, motionIcon, widget.centreX - widget.gold4 / 2, widget.height - widget.gold4 - widget.gold5, widget.gold4, widget.gold4);
             widget.SVGMotionIcon.fill = theme.danger;
             widget.SVGMotionIcon.opacity = 0.5;
 
 
-            widget.SVGLampIcon = new SVGIcon(widget.SVGViewBox, lampIcon, widget.centreX - 20, 25, 40, 40);
+            widget.SVGLampIcon = new SVGIcon(widget.SVGViewBox, lampIcon, widget.centreX - widget.gold4 / 2, widget.gold5, widget.gold4, widget.gold4);
             widget.SVGLampIcon.fill = theme.warning;
             widget.SVGLampIcon.opacity = 0.5;
 
@@ -143,8 +159,8 @@ var F16Widget =
             widget.SVGLightModeSwitcher.SVGIcon.widget = widget;
             widget.SVGViewBox.insertBefore(widget.SVGLightModeSwitcher.SVGIcon, widget.SVGViewBox.childNodes.lastChild);
 
-            widget.SVGArcWidget.opacity = 0;
-            widget.SVGArcBack.opacity = 0;
+            //widget.SVGArcWidget.opacity = 0;
+            //widget.SVGArcBack.opacity = 0;
         }
 
         F16Widget.prototype.lightModeWidgetClick = function lightModeWidgetClick(event) {
@@ -165,9 +181,10 @@ var F16Widget =
 
 
         F16Widget.prototype._resize = function _resize(size) {
+            
             if (this.size != size) {
-                this.SVGViewBox.setAttributeNS(null, "width", size );
-                this.SVGViewBox.setAttributeNS(null, "height", size);
+                this.SVGViewBox.setAttributeNS(null, "width", size + this.gold8);
+                this.SVGViewBox.setAttributeNS(null, "height", size + this.gold8);
 
             }
             this.size != size
@@ -189,12 +206,18 @@ var F16Widget =
             if (this.SVGViewBox == undefined) return;
 
 
-            this.SVGBackgroundPanel.drawRoundedRect(this.width - 5, this.height - 6, 5, 10, true, true, true, true);
-            this.SVGBackdownpanel.drawRoundedRect(this.width - 5, 10, 5, 0, false, false, true, true);
-            this.SVGHeaderPanel.drawRoundedRect(this.width, 26, 5, 0, true, true, false, false);
+         //  this.SVGBackgroundPanel.drawRoundedRect(this.width - 5, this.height - 6, 5, 10, true, true, true, true);
+       //     this.SVGBackdownpanel.drawRoundedRect(this.width - 5, 10, 5, 0, false, false, true, true);
+        //    this.SVGHeaderPanel.drawRoundedRect(this.width, 26, 5, 0, true, true, false, false);
 
-            this.SVGArcBack = new SVGArc(this.SVGViewBox, this.id + "arcback", this.centreX, this.topMargin, this.radius, this._properties.linewidth);
-            this.SVGArcWidget = new SVGArc(this.SVGViewBox, this.id + "arcwidget", this.centreX, this.topMargin, this.radius, this._properties.linewidth);
+           // this.SVGLightNMPlus = new SVGIcon(this.SVGViewBox, plusIcon, this.gold1 - this.gold6, this.gold4, this.gold6, this.gold6);
+           // this.SVGLightNMMinus = new SVGIcon(this.SVGViewBox, minusIcon, this.gold1 - this.gold6 - this.gold7, this.height - this.gold4, this.gold6, this.gold6);
+
+          // this.SVGLightNMRect = new SVGRect(this.SVGViewBox, "lightnmrect", this.gold1 - this.gold6 - this.gold7 + this.gold6 / 2 - this.gold10 / 2, this.gold4 + this.gold6, this.gold10, this.height - this.gold4 * 2 - this.gold6);
+
+
+            //this.SVGArcBack = new SVGArc(this.SVGViewBox, this.id + "arcback", this.centreX, this.topMargin, this.radius, this._properties.linewidth);
+            //this.SVGArcWidget = new SVGArc(this.SVGViewBox, this.id + "arcwidget", this.centreX, this.topMargin, this.radius, this._properties.linewidth);
 
             this.SVGWidgetText.size = this.size / 160;
             
@@ -210,8 +233,7 @@ var F16Widget =
 
         }
 
-        F16Widget.prototype.resize = function resize(size) {
-
+        F16Widget.prototype.resize = function resize(size) {          
             this._resize(size);
 
         };
@@ -261,7 +283,7 @@ var F16Widget =
         F16Widget.prototype.drawWidget = function drawWidget() {
             _BaseWidget.prototype.drawWidget.call(this);
 
-            if (this.SVGArcBack == undefined) return;
+            if (this.SVGBackgroundPanel == undefined) return;
 
             var _data = this.data;
 
