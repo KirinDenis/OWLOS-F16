@@ -1,6 +1,6 @@
 ﻿/* ----------------------------------------------------------------------------
 OWLOS DIY Open Source OS for building IoT ecosystems
-Copyright 2019, 2020 by:
+Copyright 2019, 2020, 2021, 2022 by:
 - Konstantin Brul (konstabrul@gmail.com)
 - Vitalii Glushchenko (cehoweek@gmail.com)
 - Denys Melnychuk (meldenvar@gmail.com)
@@ -73,8 +73,8 @@ var F16Widget =
             widget.animated = true;
             //widget.levelRectWidth = widget.size / 15;
             //widget.levelRectHeight = widget.size / 100;
-           //widget.levelLeft = widget.width - widget.levelRectWidth + widget.halfPanding;
-           // widget.levelTop = (widget.height - widget.levelRectHeight * 60 / 2) / 3;
+            //widget.levelLeft = widget.width - widget.levelRectWidth + widget.halfPanding;
+            // widget.levelTop = (widget.height - widget.levelRectHeight * 60 / 2) / 3;
             //widget.level1 = [];
             //widget.level2 = [];
 
@@ -117,7 +117,7 @@ var F16Widget =
 
             //Light power slider
             //Motion
-            widget.SVGLightMPlus = new SVGIcon(widget.SVGViewBox, plusIcon, widget.gold6, widget.gold4, widget.gold6, widget.gold6);
+            widget.SVGLightMPlus = new SVGIcon(widget.SVGViewBox, plusIcon, widget.gold6, widget.gold4, widget.gold6, widget.gold6);            
             widget.SVGLightMMinus = new SVGIcon(widget.SVGViewBox, minusIcon, widget.gold6, widget.height - widget.gold4, widget.gold6, widget.gold6);
 
             widget.SVGLightMRect = new SVGRect(widget.SVGViewBox, "lightmrect", widget.gold6 + widget.gold6 / 2 - widget.gold10 / 2, widget.gold4 + widget.gold6, widget.gold10, widget.height - widget.gold4 * 2 - widget.gold6);
@@ -142,8 +142,23 @@ var F16Widget =
             widget.SVGLampIcon.fill = theme.warning;
             widget.SVGLampIcon.opacity = 0.5;
 
-            
+
             //--- animate
+
+            //events 
+            widget.SVGLightModeSwitcher = new SVGIcon(widget.SVGViewBox, "", widget.centreX - 25, widget.centreY - 25, widget.centreX + 25, widget.centreY + 25);
+            widget.SVGLightModeSwitcher.SVGIcon.onclick = widget.lightModeWidgetClick;
+            widget.SVGLightModeSwitcher.SVGIcon.widget = widget;
+            widget.SVGViewBox.insertBefore(widget.SVGLightModeSwitcher.SVGIcon, widget.SVGViewBox.childNodes.lastChild);
+
+            widget.SVGLightMPlus.SVGIcon.onclick = widget.lightMPlusWidgetClick;
+            widget.SVGLightMPlus.SVGIcon.widget = widget;
+            widget.SVGViewBox.insertBefore(widget.SVGLightMPlus.SVGIcon, widget.SVGViewBox.childNodes.lastChild);
+
+
+            //widget.SVGArcWidget.opacity = 0;
+            //widget.SVGArcBack.opacity = 0;
+
             widget.clickableToTop();
             widget.proprties = widget._properties;
             widget.doOnLoad();
@@ -153,20 +168,13 @@ var F16Widget =
 
             widget._resize(widget.size);
 
-            //events 
-            widget.SVGLightModeSwitcher = new SVGIcon(widget.SVGViewBox, "", widget.centreX - 25, widget.centreY - 25, widget.centreX + 25, widget.centreY + 25);
-            widget.SVGLightModeSwitcher.SVGIcon.onclick = widget.lightModeWidgetClick;
-            widget.SVGLightModeSwitcher.SVGIcon.widget = widget;
-            widget.SVGViewBox.insertBefore(widget.SVGLightModeSwitcher.SVGIcon, widget.SVGViewBox.childNodes.lastChild);
-
-            //widget.SVGArcWidget.opacity = 0;
-            //widget.SVGArcBack.opacity = 0;
         }
 
+        //Events handlers
         F16Widget.prototype.lightModeWidgetClick = function lightModeWidgetClick(event) {
             event.stopPropagation();
             var widget = event.currentTarget.widget;
-                        
+
             if (widget.mode == WORK_MODE) {
                 var driverProperty = widget.driverClass.driver["light1mode"];
                 if (driverProperty == undefined) return;
@@ -179,9 +187,28 @@ var F16Widget =
             return true;
         };
 
+        F16Widget.prototype.lightMPlusWidgetClick = function lightMPlusWidgetClick(event) {
+            event.stopPropagation();
+            var widget = event.currentTarget.widget;
+
+            if (widget.mode == WORK_MODE) {
+                var driverProperty = widget.driverClass.driver["mlightd"];
+                if (driverProperty == undefined) return;
+                if (parseInt(driverProperty.value) < 100) {
+                    driverProperty.setValue(parseInt(driverProperty.value) + 10);
+                }
+                if (parseInt(driverProperty.value) > 100) {
+                    driverProperty.setValue(100);
+                }                
+            }
+            return true;
+        };
+
+        //--- Events handlers
+
 
         F16Widget.prototype._resize = function _resize(size) {
-            
+
             if (this.size != size) {
                 this.SVGViewBox.setAttributeNS(null, "width", size + this.gold8);
                 this.SVGViewBox.setAttributeNS(null, "height", size + this.gold8);
@@ -206,34 +233,34 @@ var F16Widget =
             if (this.SVGViewBox == undefined) return;
 
 
-         //  this.SVGBackgroundPanel.drawRoundedRect(this.width - 5, this.height - 6, 5, 10, true, true, true, true);
-       //     this.SVGBackdownpanel.drawRoundedRect(this.width - 5, 10, 5, 0, false, false, true, true);
-        //    this.SVGHeaderPanel.drawRoundedRect(this.width, 26, 5, 0, true, true, false, false);
+            //  this.SVGBackgroundPanel.drawRoundedRect(this.width - 5, this.height - 6, 5, 10, true, true, true, true);
+            //     this.SVGBackdownpanel.drawRoundedRect(this.width - 5, 10, 5, 0, false, false, true, true);
+            //    this.SVGHeaderPanel.drawRoundedRect(this.width, 26, 5, 0, true, true, false, false);
 
-           // this.SVGLightNMPlus = new SVGIcon(this.SVGViewBox, plusIcon, this.gold1 - this.gold6, this.gold4, this.gold6, this.gold6);
-           // this.SVGLightNMMinus = new SVGIcon(this.SVGViewBox, minusIcon, this.gold1 - this.gold6 - this.gold7, this.height - this.gold4, this.gold6, this.gold6);
+            // this.SVGLightNMPlus = new SVGIcon(this.SVGViewBox, plusIcon, this.gold1 - this.gold6, this.gold4, this.gold6, this.gold6);
+            // this.SVGLightNMMinus = new SVGIcon(this.SVGViewBox, minusIcon, this.gold1 - this.gold6 - this.gold7, this.height - this.gold4, this.gold6, this.gold6);
 
-          // this.SVGLightNMRect = new SVGRect(this.SVGViewBox, "lightnmrect", this.gold1 - this.gold6 - this.gold7 + this.gold6 / 2 - this.gold10 / 2, this.gold4 + this.gold6, this.gold10, this.height - this.gold4 * 2 - this.gold6);
+            // this.SVGLightNMRect = new SVGRect(this.SVGViewBox, "lightnmrect", this.gold1 - this.gold6 - this.gold7 + this.gold6 / 2 - this.gold10 / 2, this.gold4 + this.gold6, this.gold10, this.height - this.gold4 * 2 - this.gold6);
 
 
             //this.SVGArcBack = new SVGArc(this.SVGViewBox, this.id + "arcback", this.centreX, this.topMargin, this.radius, this._properties.linewidth);
             //this.SVGArcWidget = new SVGArc(this.SVGViewBox, this.id + "arcwidget", this.centreX, this.topMargin, this.radius, this._properties.linewidth);
 
             this.SVGWidgetText.size = this.size / 160;
-            
+
             this.drawText();
             //this.SVGWidgetText.text = "Auto";
             this.SVGHeaderText.size = this.size / 260;
-            
+
 
             if (this.SVGLightPowerSlider) {
-             //   this.SVGLightPowerSlider.drawRoundedRect(this.width / 20, this.height / 3, 20, 20, true, true, false, false);
-                
+                //   this.SVGLightPowerSlider.drawRoundedRect(this.width / 20, this.height / 3, 20, 20, true, true, false, false);
+
             }
 
         }
 
-        F16Widget.prototype.resize = function resize(size) {          
+        F16Widget.prototype.resize = function resize(size) {
             this._resize(size);
 
         };
@@ -253,9 +280,9 @@ var F16Widget =
                     }
 
                     this.levelArc[i].draw(280 + 60, 80 - 60);
-                
-                //animate light intensive 
-                
+
+                    //animate light intensive 
+
                     this.radar1[i].radius += 0.5;
                     this.radar1[i].opacity -= 0.01;
 
@@ -267,7 +294,7 @@ var F16Widget =
                     this.radar1[i].draw(90 + 10, 135 - 10);
                     this.radar2[i].radius = this.radar3[i].radius = this.radar4[i].radius = this.radar1[i].radius;
                     this.radar2[i].opacity = this.radar3[i].opacity = this.radar4[i].opacity = this.radar1[i].opacity;
-                    this.radar2[i].draw(135+10, 180 - 10);
+                    this.radar2[i].draw(135 + 10, 180 - 10);
                     this.radar3[i].draw(180 + 10, 225 - 10);
                     this.radar4[i].draw(225 + 10, 270 - 10);
                 }
