@@ -70,7 +70,7 @@ var F16Widget =
             widget.widgetHolder.className = "col-6 col-sm-4 col-lg-2 widgetHolder";
 
             //animate
-            widget.animated = true;
+            widget.animated = false;
             //widget.levelRectWidth = widget.size / 15;
             //widget.levelRectHeight = widget.size / 100;
             //widget.levelLeft = widget.width - widget.levelRectWidth + widget.halfPanding;
@@ -107,9 +107,6 @@ var F16Widget =
                 widget.radar4.push(SVGRadarArc4);
             }
 
-            requestAnimationFrame(function () {
-                return widget.animate();
-            });
 
             widget.SVGHeaderPanel = new SVGArc(widget.SVGViewBox, widget.id + "headerpanel", 0, 0, widget.width, 1);
             widget.SVGHeaderPanel.drawRoundedRect(widget.width, widget.gold5, 5, 0, true, true, false, false);
@@ -117,7 +114,7 @@ var F16Widget =
 
             //Light power slider
             //Motion
-            widget.SVGLightMPlus = new SVGIcon(widget.SVGViewBox, plusIcon, widget.gold6, widget.gold4, widget.gold6, widget.gold6);            
+            widget.SVGLightMPlus = new SVGIcon(widget.SVGViewBox, plusIcon, widget.gold6, widget.gold4, widget.gold6, widget.gold6);
             widget.SVGLightMMinus = new SVGIcon(widget.SVGViewBox, minusIcon, widget.gold6, widget.height - widget.gold4, widget.gold6, widget.gold6);
 
             widget.SVGLightMRect = new SVGRect(widget.SVGViewBox, "lightmrect", widget.gold6 + widget.gold6 / 2 - widget.gold10 / 2, widget.gold4 + widget.gold6, widget.gold10, widget.height - widget.gold4 * 2 - widget.gold6);
@@ -140,26 +137,53 @@ var F16Widget =
 
             widget.SVGLampIcon = new SVGIcon(widget.SVGViewBox, lampIcon, widget.centreX - widget.gold4 / 2, widget.gold5, widget.gold4, widget.gold4);
             widget.SVGLampIcon.fill = theme.warning;
-            widget.SVGLampIcon.opacity = 0.5;
+            widget.SVGLampIcon.opacity = parseInt(widget.driverClass.driver["pwm1"].value) / 100.0 + 0.2;
 
 
             //--- animate
 
-            //events 
-            widget.SVGLightModeSwitcher = new SVGIcon(widget.SVGViewBox, "", widget.centreX - 25, widget.centreY - 25, widget.centreX + 25, widget.centreY + 25);
-            widget.SVGLightModeSwitcher.SVGIcon.onclick = widget.lightModeWidgetClick;
-            widget.SVGLightModeSwitcher.SVGIcon.widget = widget;
-            widget.SVGViewBox.insertBefore(widget.SVGLightModeSwitcher.SVGIcon, widget.SVGViewBox.childNodes.lastChild);
+            widget.clickableToTop();
+            //events             
+            widget.SVGLampIcon.SVGIcon.onclick = widget.lightModeWidgetClick;
+            widget.SVGLampIcon.SVGIcon.widget = widget;
+            widget.SVGViewBox.insertBefore(widget.SVGLampIcon.SVGIcon, widget.SVGViewBox.childNodes.lastChild);
 
             widget.SVGLightMPlus.SVGIcon.onclick = widget.lightMPlusWidgetClick;
             widget.SVGLightMPlus.SVGIcon.widget = widget;
             widget.SVGViewBox.insertBefore(widget.SVGLightMPlus.SVGIcon, widget.SVGViewBox.childNodes.lastChild);
 
+            widget.SVGLightMMinus.SVGIcon.onclick = widget.lightMMinusWidgetClick;
+            widget.SVGLightMMinus.SVGIcon.widget = widget;
+            widget.SVGViewBox.insertBefore(widget.SVGLightMMinus.SVGIcon, widget.SVGViewBox.childNodes.lastChild);
 
-            //widget.SVGArcWidget.opacity = 0;
-            //widget.SVGArcBack.opacity = 0;
+            widget.SVGLightNMPlus.SVGIcon.onclick = widget.lightNMPlusWidgetClick;
+            widget.SVGLightNMPlus.SVGIcon.widget = widget;
+            widget.SVGViewBox.insertBefore(widget.SVGLightNMPlus.SVGIcon, widget.SVGViewBox.childNodes.lastChild);
 
-            widget.clickableToTop();
+            widget.SVGLightNMMinus.SVGIcon.onclick = widget.lightNMMinusWidgetClick;
+            widget.SVGLightNMMinus.SVGIcon.widget = widget;
+            widget.SVGViewBox.insertBefore(widget.SVGLightNMMinus.SVGIcon, widget.SVGViewBox.childNodes.lastChild);
+
+
+            //driver events 
+            widget.animated = parseInt(widget.driverClass.driver["motion1detect"].value) == 1 ? true : false;
+            widget.driverClass.driver["motion1detect"].addValueListner(function onValueChange(sender, driverProperty) {
+                widget.animated = parseInt(driverProperty.value) == 1 ? true : false;
+
+            }, widget);
+
+            widget.driverClass.driver["pwm1"].addValueListner(function onValueChange(sender, driverProperty) {
+                widget.SVGLampIcon.opacity = parseInt(driverProperty.value) / 100.0;
+                widget.animated = true;
+
+            }, widget);
+
+            requestAnimationFrame(function () {
+                return widget.animate();
+            });
+
+
+
             widget.proprties = widget._properties;
             widget.doOnLoad();
 
@@ -195,14 +219,70 @@ var F16Widget =
                 var driverProperty = widget.driverClass.driver["mlightd"];
                 if (driverProperty == undefined) return;
                 if (parseInt(driverProperty.value) < 100) {
-                    driverProperty.setValue(parseInt(driverProperty.value) + 10);
+                    var value = parseInt(driverProperty.value) + 10;
+                    if (value > 100) {
+                        value = 100;
+                    }
+                    driverProperty.setValue(value);
                 }
-                if (parseInt(driverProperty.value) > 100) {
-                    driverProperty.setValue(100);
-                }                
             }
             return true;
         };
+
+        F16Widget.prototype.lightMMinusWidgetClick = function lightMMinusWidgetClickk(event) {
+            event.stopPropagation();
+            var widget = event.currentTarget.widget;
+
+            if (widget.mode == WORK_MODE) {
+                var driverProperty = widget.driverClass.driver["mlightd"];
+                if (driverProperty == undefined) return;
+                if (parseInt(driverProperty.value) > 0) {
+                    var value = parseInt(driverProperty.value) - 10;
+                    if (value < 0) {
+                        value = 0;
+                    }
+                    driverProperty.setValue(value);
+                }
+            }
+            return true;
+        };
+
+        F16Widget.prototype.lightNMPlusWidgetClick = function lightNMPlusWidgetClick(event) {
+            event.stopPropagation();
+            var widget = event.currentTarget.widget;
+
+            if (widget.mode == WORK_MODE) {
+                var driverProperty = widget.driverClass.driver["nmlightd"];
+                if (driverProperty == undefined) return;
+                if (parseInt(driverProperty.value) < 100) {
+                    var value = parseInt(driverProperty.value) + 10;
+                    if (value > 100) {
+                        value = 100;
+                    }
+                    driverProperty.setValue(value);
+                }
+            }
+            return true;
+        };
+
+        F16Widget.prototype.lightNMMinusWidgetClick = function lightNMMinusWidgetClickk(event) {
+            event.stopPropagation();
+            var widget = event.currentTarget.widget;
+
+            if (widget.mode == WORK_MODE) {
+                var driverProperty = widget.driverClass.driver["nmlightd"];
+                if (driverProperty == undefined) return;
+                if (parseInt(driverProperty.value) > 0) {
+                    var value = parseInt(driverProperty.value) - 10;
+                    if (value < 0) {
+                        value = 0;
+                    }
+                    driverProperty.setValue(value);
+                }
+            }
+            return true;
+        };
+
 
         //--- Events handlers
 
@@ -271,39 +351,49 @@ var F16Widget =
             if (this.animated) {
                 //animate motion
                 for (var i = 0; i < 4; i++) {
-                    this.levelArc[i].radius += 1.4;
-                    this.levelArc[i].opacity -= 0.01;
+                    if (parseInt(this.driverClass.driver["motion1detect"].value) == 1) {
 
-                    if (this.levelArc[i].radius > this.radius * 10) {
-                        this.levelArc[i].radius = this.radius;
-                        this.levelArc[i].opacity = 0.6;
+                        this.levelArc[i].radius += 1.4;
+                        this.levelArc[i].opacity -= 0.01;
+
+                        if (this.levelArc[i].radius > this.radius * 10) {
+                            this.levelArc[i].radius = this.radius;
+                            this.levelArc[i].opacity = 0.6;
+                        }
+
+                        this.levelArc[i].draw(280 + 60, 80 - 60);
+                    }
+                    else {                        
+                           this.levelArc[i].opacity = 0.0;                        
                     }
 
-                    this.levelArc[i].draw(280 + 60, 80 - 60);
 
                     //animate light intensive 
+                    if (this.driverClass.driver["pwm1"].value > 20) {
+                        this.radar1[i].radius += 0.5;
+                        this.radar1[i].opacity -= 0.01;
 
-                    this.radar1[i].radius += 0.5;
-                    this.radar1[i].opacity -= 0.01;
-
-                    if (this.radar1[i].radius > this.radius * 2) {
-                        this.radar1[i].radius = this.radius / 2;
-                        this.radar1[i].opacity = 0.7;
+                        if (this.radar1[i].radius > this.radius * 2) {
+                            this.radar1[i].radius = this.radius / 2;
+                            this.radar1[i].opacity = 0.7;
+                        }
+                        //90..270 step 10
+                        this.radar1[i].draw(90 + 10, 135 - 10);
+                        this.radar2[i].radius = this.radar3[i].radius = this.radar4[i].radius = this.radar1[i].radius;
+                        this.radar2[i].opacity = this.radar3[i].opacity = this.radar4[i].opacity = this.radar1[i].opacity;
+                        this.radar2[i].draw(135 + 10, 180 - 10);
+                        this.radar3[i].draw(180 + 10, 225 - 10);
+                        this.radar4[i].draw(225 + 10, 270 - 10);
                     }
-                    //90..270 step 10
-                    this.radar1[i].draw(90 + 10, 135 - 10);
-                    this.radar2[i].radius = this.radar3[i].radius = this.radar4[i].radius = this.radar1[i].radius;
-                    this.radar2[i].opacity = this.radar3[i].opacity = this.radar4[i].opacity = this.radar1[i].opacity;
-                    this.radar2[i].draw(135 + 10, 180 - 10);
-                    this.radar3[i].draw(180 + 10, 225 - 10);
-                    this.radar4[i].draw(225 + 10, 270 - 10);
+                    else {
+                        this.radar1[i].opacity = this.radar2[i].opacity = this.radar3[i].opacity = this.radar4[i].opacity =  0.0;
+                    }
                 }
-
-
-                requestAnimationFrame(function () {
-                    return baseWidget2.animate();
-                });
             }
+            requestAnimationFrame(function () {
+                return baseWidget2.animate();
+            });
+
         };
 
 

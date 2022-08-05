@@ -95,8 +95,13 @@ Device configuration #1:
 void IRAM_ATTR onMotion1DetectHandler();
 void IRAM_ATTR onMotion2DetectHandler();
 
+volatile uint8_t LSPercent;
+
 volatile unsigned long lastMotion1Change = 0;
 volatile unsigned long lastMotion2Change = 0;
+
+volatile bool motion1Detect = false;
+volatile bool motion2Detect = false;
 
 volatile uint16_t current1LightPWM = LIGHT_ON_PWM;
 volatile uint16_t current2LightPWM = LIGHT_ON_PWM;
@@ -132,6 +137,24 @@ uint16_t PercentToPWM(uint8_t percent)
   }
   return LIGHT_OFF_PWM - ((float)LIGHT_OFF_PWM / 100.0f * (float)percent);
 }
+
+// PWM to Percent 
+// LIGHT_ON_PWM  = 100% (default value 0)
+// LIGHT_OFF_PWM = 0%  (default value 1024)
+uint16_t PWMToPercent(uint16_t PWM)
+{
+  if (PWM >= 1024)
+  {
+    return 0;
+  }
+  PWM = (1024 - PWM) / (1024.0f / 100.0f);
+  if (PWM > 100)
+  {
+    PWM = 100;
+  }
+  return PWM;
+}
+
 
 // Light sensor value(data) to percent
 // LIGHT_SENSOR_BRIGHT - 100% (default value 830)
@@ -177,17 +200,33 @@ uint16_t setPWM(uint8 lightMode, uint8_t PWMPin, unsigned long lastMotionChange,
   else if (lightMode == LIGHT_MODE_AUTO || lightMode == LIGHT_MODE_AUTO_MOTION)
   {
 
-    uint8_t LSPercent = LStoPercent(analogRead(LIGHT_SENSOR_PIN)) / 10 * 10; // 10% sensor bounce
+    LSPercent = LStoPercent(analogRead(LIGHT_SENSOR_PIN)) / 10 * 10; // 10% sensor bounce
 
     // if motion detected
-    uint16_t PWM;
+    uint16_t PWM;    
     if (lastMotionChange + mTime * 1000 > millis() || lightMode == LIGHT_MODE_AUTO)
     {
       PWM = PercentToPWM((100.0f - (float)LSPercent) / (float)(100.0f / (mLightDark - mLightBright)));
+      if (PWMPin == PWM_1_PIN)
+      {
+        motion1Detect = true;
+      }
+      else 
+      {
+        motion2Detect = true;
+      }
     }
     else
     {
       PWM = PercentToPWM((100.0f - (float)LSPercent) / (100.0f / (float)(nmLightDark - nmLightBright)));
+      if (PWMPin == PWM_1_PIN)
+      {
+        motion1Detect = false;
+      }
+      else 
+      {
+        motion2Detect = false;
+      }
     }
 
     if (currentLightPWM != PWM)
@@ -298,7 +337,13 @@ bool F16Driver::query()
 
 String F16Driver::getAllProperties()
 {
+  
   return BaseDriver::getAllProperties() +
+         "lspercent=" + String(LSPercent) + "//ir\n"
+         "pwm1=" + String(PWMToPercent(current1LightPWM)) + "//ir\n"
+         "pwm2=" + String(PWMToPercent(current2LightPWM)) + "//ir\n"
+         "motion1detect=" + String(motion1Detect) + "//br\n"         
+         "motion2detect=" + String(motion2Detect) + "//br\n"         
          "mlightb=" + getProperty("mlightb", mLightBright) + "//i\n"
                                                              "nmlightb=" +
          getProperty("nmlightb", nmLightBright) + "//i\n"
@@ -334,6 +379,32 @@ String F16Driver::onMessage(String route, String _payload, int8_t transportMask)
   if (!result.equals(WRONG_PROPERTY_NAME))
     return result;
 
+
+  if (matchRoute(route, topic, "/getlspercent"))
+  {
+    result = String(LSPercent);
+  }
+  else 
+  if (matchRoute(route, topic, "/getpwm1"))
+  {
+    result = String(PWMToPercent(current1LightPWM));
+  }
+  else   
+  if (matchRoute(route, topic, "/getpwm2"))
+  {
+    result = String(PWMToPercent(current2LightPWM));
+  }
+  else   
+  if (matchRoute(route, topic, "/getmotion1detect"))
+  {
+    result = String(motion1Detect);
+  }
+  else 
+  if (matchRoute(route, topic, "/getmotion2detect"))
+  {
+    result = String(motion2Detect);
+  }
+  else 
   if (matchRoute(route, topic, "/getmlightb"))
   {
     result = String(getProperty("mlightb", mLightBright));

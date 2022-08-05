@@ -224,21 +224,26 @@ bool WiFiReconnect()
 			debugOut(TransportID, "try to connect to - " + WiFiSSID + ":" + WiFiPassword + " wait ");
 #endif
 #endif
-			nodeGetScanWiFiNetworks();
+		//	nodeGetScanWiFiNetworks();
 #ifdef DETAILED_DEBUG
 #ifdef DEBUG
 			debugOut(TransportID, nodeGetWiFiNetworksParameters());
 #endif
 #endif
+
+#define DEBUG_ESP_WIFI
+           		    
 			if (!_WiFiMulti.existsAP(WiFiSSID.c_str(), WiFiPassword.c_str()))
 			{
 				_WiFiMulti.addAP(WiFiSSID.c_str(), WiFiPassword.c_str());
 			}
-			_WiFiMulti.addAP(WiFiSSID.c_str(), WiFiPassword.c_str());
+			//_WiFiMulti.addAP(WiFiSSID.c_str(), WiFiPassword.c_str());
 			int wait = 0;
 			while (_WiFiMulti.run() != WL_CONNECTED)
 			{
+
 				delay(500);
+				yield(); 
 				wait++;
 #ifdef DETAILED_DEBUG
 #ifdef DEBUG

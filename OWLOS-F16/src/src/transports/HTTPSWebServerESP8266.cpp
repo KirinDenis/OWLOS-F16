@@ -558,7 +558,7 @@ void handleGetWebProperty(WiFiClient client)
 			else //default 
 			{
 				sendResponseHeader(200, "text/html", "", client);
-				String defaultWebProp = "{\"language\":\"en\",\"speak\":false,\"voice\":0,\"widgetssize\":150,\"dashboards\":[{\"id\":\"main\",\"widgets\":[]}],\"things\":[{\"host\":\"http://"+   client.localIP().toString() +  "/\",\"thingRefreshInterval\":20000,\"thingnickname\":\"local\",\"_networkStatus\":0,\"drivers\":[],\"pins\":[],\"driversPins\":[],\"accessableDrivers\":[]}]}";
+				String defaultWebProp = "{\"language\":\"en\",\"speak\":false,\"voice\":0,\"widgetssize\":150,\"dashboards\":[{\"id\":\"main\",\"widgets\":[]}],\"things\":[{\"host\":\"http://"+   client.localIP().toString() +  "/\",\"thingRefreshInterval\":1000,\"thingnickname\":\"local\",\"_networkStatus\":0,\"drivers\":[],\"pins\":[],\"driversPins\":[],\"accessableDrivers\":[]}]}";
 				client.write(defaultWebProp.c_str());
 			}
 			return;			
