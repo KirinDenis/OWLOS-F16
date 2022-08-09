@@ -100,13 +100,10 @@ bool kernelSetup()
 	//The begin() just setup connection properties
 	transportBegin();
 
-	//F16 Driver 
-    debugOut("F6-TRACERT", "A1");
-    driversAdd(F16_DRIVER_TYPE, F16_Driver_Id, F16_Driver_Pins);
-	debugOut("F6-TRACERT", "A2");
+	//F16 Driver     
+    driversAdd(F16_DRIVER_TYPE, F16_Driver_Id, F16_Driver_Pins);	
     _F16Driver = (F16Driver*)driversGetDriver(F16_Driver_Id);
-	debugOut("F6-TRACERT", "A3");
-
+	
 	//The OWLOS harvester started up and went quietly...
 #ifdef DETAILED_DEBUG
 #ifdef DEBUG

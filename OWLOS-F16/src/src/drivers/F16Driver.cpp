@@ -178,15 +178,13 @@ uint8_t LStoPercent(uint16_t value)
 void IRAM_ATTR onMotion1DetectHandler()
 {
   lastMotion1Change = millis();    
-  debugOut("motion 1", "detect");
 }
 
 //-------------------------------------------------------------------------------------------------------
 // Motion sensor 2 interupt handler
 void IRAM_ATTR onMotion2DetectHandler()
 {
-  lastMotion2Change = millis();  
-  debugOut("motion 2", "detect");
+  lastMotion2Change = millis();    
 }
 
 //-------------------------------------------------------------------------------------------------------

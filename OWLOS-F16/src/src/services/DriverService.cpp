@@ -625,14 +625,12 @@ String driversAdd(int type, String id, String pins) //String D1,D3,GND,....
 #endif	
 #ifdef USE_F16_DRIVER
 	if (type == F16_DRIVER_TYPE)
-	{
-		debugOut("F6-TRACERT", "B1");
+	{		
 #ifdef DETAILED_DEBUG
 #ifdef DEBUG
 		debugOut("pin", String(pinCount));
 #endif
 #endif
-debugOut("F6-TRACERT", "B2");
 		if (pinCount != F16Driver::getPinsCount())
 		{
 			return "F16Driver's pins quantity does not match, must be " + String(F16Driver::getPinsCount());

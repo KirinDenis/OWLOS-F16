@@ -72,7 +72,7 @@ OWLOS распространяется в надежде, что она буде
                 //   ^^^ Разумеется в том случае есть #define USE_HTTP_SERVER включен
 
                 //Включает/Выключает (1/0) WiFi режим точки доступа (другие WiFi устройства могут подключатся к OWLOS если включено).
-                #define DEFAULT_WIFI_ACCESS_POINT_AVAILABLE 0               //файл /owlnode.wifiapavailable
+                #define DEFAULT_WIFI_ACCESS_POINT_AVAILABLE 1               //файл /owlnode.wifiapavailable
 
                 //Если WiFi режим точки доступа включен – название точки доступа (WiFi сети)
                 #define DEFAULT_WIFI_ACCESS_POINT_SSID "owlnode"            //файл /owlnode.wifiaccesspointssid
@@ -87,7 +87,7 @@ OWLOS распространяется в надежде, что она буде
                 #define DEFAULT_WIFI_ACCESS_POINT_IP  "192.168.4.1"         //файл /owlnode.wifiaccesspointip
 
                 //Включает/Выключает (1/0) WiFi режим станции (подключается к указаной WiFi сети (точки доступа))
-                #define DEFAULT_WIFI_STATION_AVAILABLE 1
+                #define DEFAULT_WIFI_STATION_AVAILABLE 0
 
                 //Название подключаемой точки доступа (WiFi сети)
                 //При запуске OWLOS сделает 10 попыток подключится к DEFAULT_WIFI_STATION_SSID сети, в случае неудачи 
